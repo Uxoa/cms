@@ -28,11 +28,10 @@ public class InitFakeData implements CommandLineRunner {
             User admin = User.builder()
                   .name("Admin")
                   .lastName("Admin")
-                  .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número
-                  // móvil de 10 dígitos
+                  .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número móvil de 9 dígitos
                   .email("admin@airboss.com")
                   .password(passwordEncoder.encode("admin123")) // Contraseña codificada
-                  .role("ROLE_ADMIN") // Asegurar prefijo ROLE_
+                  .role("ROLE_ADMIN") // Asignar rol ADMIN
                   .profileImage("https://via.placeholder.com/150") // Imagen genérica
                   .registrationDate(LocalDateTime.now())
                   .lastLogin(LocalDateTime.now())
@@ -40,18 +39,17 @@ public class InitFakeData implements CommandLineRunner {
             userRepository.save(admin);
         }
         
-        // Crear usuarios con ROL USER
+        // Crear 2 usuarios con ROL USER
         for (int i = 0; i < 2; i++) {
             String email = faker.internet().emailAddress();
             if (userRepository.findByEmail(email).isEmpty()) {
                 User user = User.builder()
                       .name(faker.name().firstName())
                       .lastName(faker.name().lastName())
-                      .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número
-                      // móvil de 10 dígitos
+                      .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número móvil de 9 dígitos
                       .email(email)
                       .password(passwordEncoder.encode("user123")) // Contraseña codificada
-                      .role("ROLE_USER") // Asegurar prefijo ROLE_
+                      .role("ROLE_USER") // Asignar rol USER
                       .profileImage("https://via.placeholder.com/150") // Imagen genérica
                       .registrationDate(LocalDateTime.now())
                       .lastLogin(null) // Último login será null al inicio
@@ -59,5 +57,10 @@ public class InitFakeData implements CommandLineRunner {
                 userRepository.save(user);
             }
         }
+        
+        System.out.println("Datos iniciales cargados correctamente:");
+        System.out.println("- Usuario admin: admin@airboss.com / admin123");
+        System.out.println("- 2 usuarios con ROL_USER creados.");
     }
 }
+

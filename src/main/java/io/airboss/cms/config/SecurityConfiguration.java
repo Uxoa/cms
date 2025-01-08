@@ -1,5 +1,6 @@
 package io.airboss.cms.config;
 
+import io.airboss.cms.filter.JwtAuthenticationFilter;
 import io.airboss.cms.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfiguration {
@@ -25,24 +27,15 @@ public class SecurityConfiguration {
     }
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        http.csrf(csrf -> csrf.disable()) // Desactivar CSRF para pruebas iniciales
               .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/admin/**").hasRole("ADMIN") // Solo para ADMIN
-                    .requestMatchers("/user/**").hasRole("USER")   // Solo para USER
-                    .anyRequest().authenticated()                 // Resto debe estar autenticado
+                    .requestMatchers("/auth/**").permitAll() // Permitir acceso a /auth
+                    .requestMatchers("/admin/**").hasRole("ADMIN") // Protege admin solo para ROLE_ADMIN
+                    .requestMatchers("/user/**").hasRole("USER") // Protege user solo para ROLE_USER
+                    .anyRequest().authenticated() // El resto necesita autenticación
               )
-              .headers(headers -> headers
-                    .cacheControl(cache -> cache.disable()) // Deshabilitar caché
-              )
-              .httpBasic(Customizer.withDefaults()) // Habilitar Basic Auth
-              .logout(logout -> logout
-                    .logoutUrl("/logout") // URL para logout
-                    .logoutSuccessHandler((request, response, authentication) -> {
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Responder con 401
-                        response.getWriter().write("Has cerrado sesión correctamente."); // Mensaje de logout
-                    })
-              );
+              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
