@@ -1,0 +1,65 @@
+@startuml
+entity "users" as Users {
+    + ID : int [PK]
+    --
+    Nombre : string
+    Apellido : string
+    Email : string [unique]
+    Contraseña : string
+    Rol : string
+    ImagenPerfil : string
+    FechaRegistro : datetime
+    UltimoLogin : datetime
+}
+
+entity "flights" as Flights {
+    + ID : int [PK]
+    --
+    CodigoVuelo : string
+    RutaID : int [FK -> Routes.ID]
+    FechaHoraSalida : datetime
+    FechaHoraLlegada : datetime
+    CapacidadTotal : int
+    PlazasDisponibles : int
+    Precio : decimal
+    Estado : boolean
+}
+
+entity "reservations" as Reservations {
+    + ID : int [PK]
+    --
+    UsuarioID : int [FK -> Users.ID]
+    VueloID : int [FK -> Flights.ID]
+    NumeroPlazasReservadas : int
+    FechaReserva : datetime
+    MetodoPago : string
+    CodigoConfirmacion : string [unique]
+    Estado : string
+}
+
+entity "airports" as Airports {
+    + ID : int [PK]
+    --
+    NombreAeropuerto : string
+    Codigo : string [unique]
+    Ciudad : string
+    Pais : string
+}
+
+entity "routes" as Routes {
+    + ID : int [PK]
+    --
+    AeropuertoOrigenID : int [FK -> Airports.ID]
+    AeropuertoDestinoID : int [FK -> Airports.ID]
+    DuracionEstimada : int
+    Frecuencia : string
+    Activo : boolean
+}
+
+' Relationships
+Users ||--o{ Reservations : "1 a muchos"
+Flights ||--o{ Reservations : "1 a muchos"
+Routes ||--o{ Flights : "1 a muchos"
+Airports ||--o{ Routes : "1 a muchos (Origen)"
+Airports ||--o{ Routes : "1 a muchos (Destino)"
+@enduml
