@@ -4,56 +4,56 @@ entity "users" as Users {
     --
     Nombre : string
     Apellido : string
-    Email : string [unique]
-    Contraseña : string
-    Rol : string
+    Email : string [unique, not null]
+    Contraseña : string [not null]
+    Rol : string [not null] <<enum: ROLE_ADMIN, ROLE_USER>>
     ImagenPerfil : string
-    FechaRegistro : datetime
-    UltimoLogin : datetime
+    FechaRegistro : localdatetime [not null]
+    UltimoLogin : localdatetime
 }
 
 entity "flights" as Flights {
     + ID : int [PK]
     --
-    CodigoVuelo : string
-    RutaID : int [FK -> Routes.ID]
-    FechaHoraSalida : datetime
-    FechaHoraLlegada : datetime
-    CapacidadTotal : int
-    PlazasDisponibles : int
-    Precio : decimal
-    Estado : boolean
+    CodigoVuelo : string [unique, not null]
+    RutaID : int [FK -> Routes.ID, not null]
+    FechaHoraSalida : localdatetime [not null]
+    FechaHoraLlegada : localdatetime [not null]
+    CapacidadTotal : int [not null]
+    PlazasDisponibles : int [not null]
+    Precio : decimal [not null]
+    Estado : boolean [not null] <<default: true>>
 }
 
 entity "reservations" as Reservations {
     + ID : int [PK]
     --
-    UsuarioID : int [FK -> Users.ID]
-    VueloID : int [FK -> Flights.ID]
-    NumeroPlazasReservadas : int
-    FechaReserva : datetime
+    UsuarioID : int [FK -> Users.ID, not null]
+    VueloID : int [FK -> Flights.ID, not null]
+    NumeroPlazasReservadas : int [not null]
+    FechaReserva : datetime [not null]
     MetodoPago : string
-    CodigoConfirmacion : string [unique]
-    Estado : string
+    CodigoConfirmacion : string [unique, not null]
+    Estado : string [not null] <<enum: Pendiente, Confirmada, Cancelada>>
 }
 
 entity "airports" as Airports {
     + ID : int [PK]
     --
-    NombreAeropuerto : string
-    Codigo : string [unique]
-    Ciudad : string
-    Pais : string
+    NombreAeropuerto : string [not null]
+    Codigo : string [unique, not null]
+    Ciudad : string [not null]
+    Pais : string [not null]
 }
 
 entity "routes" as Routes {
     + ID : int [PK]
     --
-    AeropuertoOrigenID : int [FK -> Airports.ID]
-    AeropuertoDestinoID : int [FK -> Airports.ID]
-    DuracionEstimada : int
-    Frecuencia : string
-    Activo : boolean
+    AeropuertoOrigenID : long [FK -> Airports.ID, not null]
+    AeropuertoDestinoID : long [FK -> Airports.ID, not null]
+    DuracionEstimada : int [not null]
+    Frecuencia : string [not null] <<enum: Diaria, Semanal, Mensual>>
+    Activo : boolean [not null] <<default: true>>
 }
 
 ' Relationships
@@ -63,3 +63,4 @@ Routes ||--o{ Flights : "1 a muchos"
 Airports ||--o{ Routes : "1 a muchos (Origen)"
 Airports ||--o{ Routes : "1 a muchos (Destino)"
 @enduml
+

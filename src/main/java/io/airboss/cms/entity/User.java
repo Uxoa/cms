@@ -36,6 +36,9 @@ public class User {
     @Column(name = "UltimoLogin")
     private LocalDateTime lastLogin;
     
+    public User() {
+    }
+    
     public Long getId() {
         return id;
     }

@@ -6,15 +6,15 @@ import jakarta.persistence.*;
 @Table(name = "airports")
 public class Airport {
     
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
     
     @Column(name = "NombreAeropuerto", nullable = false)
     private String airportName;
     
-    @Column(name = "Codigo", unique = true, nullable = false) // Código único
+    @Column(name = "Codigo", unique = true, nullable = false)
     private String code;
     
     @Column(name = "Ciudad", nullable = false)
@@ -23,6 +23,19 @@ public class Airport {
     @Column(name = "Pais", nullable = false)
     private String country;
     
+    // Constructor vacío
+    public Airport() {}
+    
+    // Constructor con parámetros
+    public Airport(Long id, String airportName, String code, String city, String country) {
+        this.id = id;
+        this.airportName = airportName;
+        this.code = code;
+        this.city = city;
+        this.country = country;
+    }
+    
+    // Getters y setters
     public Long getId() {
         return id;
     }
@@ -61,5 +74,16 @@ public class Airport {
     
     public void setCountry(String country) {
         this.country = country;
+    }
+    
+    @Override
+    public String toString() {
+        return "Airport{" +
+              "id=" + id +
+              ", airportName='" + airportName + '\'' +
+              ", code='" + code + '\'' +
+              ", city='" + city + '\'' +
+              ", country='" + country + '\'' +
+              '}';
     }
 }

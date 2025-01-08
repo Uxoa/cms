@@ -2,76 +2,90 @@ package io.airboss.cms.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-@Table(name = "routes") // Mapea la tabla 'routes'
-public class Route {
+@Table(name = "routes")
+public class Route implements Serializable {
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID autoincremental
-    private Long id;
+    @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     
-    @ManyToOne // Relación con la tabla 'airports' (origen)
-    @JoinColumn(name = "AeropuertoOrigenID", nullable = false)
-    private Airport originAirport;
+    @Column(name = "AeropuertoOrigenID", nullable = false)
+    private Integer aeropuertoOrigenID;
     
-    @ManyToOne // Relación con la tabla 'airports' (destino)
-    @JoinColumn(name = "AeropuertoDestinoID", nullable = false)
-    private Airport destinationAirport;
+    @Column(name = "AeropuertoDestinoID", nullable = false)
+    private Integer aeropuertoDestinoID;
     
     @Column(name = "DuracionEstimada", nullable = false)
-    private Integer estimatedDuration;
+    private Integer duracionEstimada;
     
-    @Column(name = "Frecuencia", nullable = true)
-    private String frequency;
+    @Column(name = "frecuencia")
+    private String frecuencia;
     
-    @Column(name = "Activo", nullable = false)
-    private Boolean active;
+    @Column(name = "Activo")
+    private Integer activo;
     
-    // Getters y Setters
-    public Long getId() {
+    
+    public Route(Integer id, Integer aeropuertoOrigenID, Integer aeropuertoDestinoID, Integer duracionEstimada, String frecuencia, Integer activo) {
+        this.id = id;
+        this.aeropuertoOrigenID = aeropuertoOrigenID;
+        this.aeropuertoDestinoID = aeropuertoDestinoID;
+        this.duracionEstimada = duracionEstimada;
+        this.frecuencia = frecuencia;
+        this.activo = activo;
+    }
+    
+    public Route() {
+    }
+    
+    public Integer getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     
-    public Airport getOriginAirport() {
-        return originAirport;
+    public Integer getAeropuertoOrigenID() {
+        return aeropuertoOrigenID;
     }
     
-    public void setOriginAirport(Airport originAirport) {
-        this.originAirport = originAirport;
+    public void setAeropuertoOrigenID(Integer aeropuertoOrigenID) {
+        this.aeropuertoOrigenID = aeropuertoOrigenID;
     }
     
-    public Airport getDestinationAirport() {
-        return destinationAirport;
+    public Integer getAeropuertoDestinoID() {
+        return aeropuertoDestinoID;
     }
     
-    public void setDestinationAirport(Airport destinationAirport) {
-        this.destinationAirport = destinationAirport;
+    public void setAeropuertoDestinoID(Integer aeropuertoDestinoID) {
+        this.aeropuertoDestinoID = aeropuertoDestinoID;
     }
     
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
+    public Integer getDuracionEstimada() {
+        return duracionEstimada;
     }
     
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
+    public void setDuracionEstimada(Integer duracionEstimada) {
+        this.duracionEstimada = duracionEstimada;
     }
     
-    public String getFrequency() {
-        return frequency;
+    public String getFrecuencia() {
+        return frecuencia;
     }
     
-    public void setFrequency(String frequency) {
-        this.frequency = frequency;
+    public void setFrecuencia(String frecuencia) {
+        this.frecuencia = frecuencia;
     }
     
-    public Boolean getActive() {
-        return active;
+    public Integer getActivo() {
+        return activo;
     }
     
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setActivo(Integer activo) {
+        this.activo = activo;
     }
 }
