@@ -12,28 +12,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "Nombre", nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String name;
    
-    @Column(name =  "Apellido", nullable = false)
+    @Column(name =  "apellido", nullable = false)
     private String lastName;
     
-    @Column(name = "Email", unique = true,nullable = false)
+    @Column(name = "email", unique = true,nullable = false)
     private String email;
     
-    @Column(name = "Contraseña", nullable = false)
+    @Column(name = "contraseña", nullable = false)
     private String password;
     
-    @Column(name = "Rol", nullable = false)
+    @Column(name = "rol", nullable = false)
     private String role;
     
-    @Column(name = "ImagenPerfil")
+    @Column(name = "imagen_perfil")
     private String profileImage;
     
-    @Column(name = "FechaRegistro", updatable = false)
+    @Column(name = "fecha_registro", updatable = false)
     private LocalDateTime registrationDate;
     
-    @Column(name = "UltimoLogin")
+    @Column(name = "ultimo_login")
     private LocalDateTime lastLogin;
     
     public User() {

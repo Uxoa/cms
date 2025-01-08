@@ -13,13 +13,13 @@ public class Route implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    @Column(name = "AeropuertoOrigenID", nullable = false)
+    @Column(name = "aeropuerto_origen_id", nullable = false)
     private Integer aeropuertoOrigenID;
     
-    @Column(name = "AeropuertoDestinoID", nullable = false)
+    @Column(name = "aeropuerto_destino_id", nullable = false)
     private Integer aeropuertoDestinoID;
     
-    @Column(name = "DuracionEstimada", nullable = false)
+    @Column(name = "duracion_estimada", nullable = false)
     private Integer duracionEstimada;
     
     @Column(name = "frecuencia")
