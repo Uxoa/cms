@@ -28,11 +28,11 @@ public class InitFakeData implements CommandLineRunner {
             User admin = User.builder()
                   .name("Admin")
                   .lastName("Admin")
-                  .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(1))) // Generar
-                  // número móvil de 10 dígitos
+                  .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número
+                  // móvil de 10 dígitos
                   .email("admin@airboss.com")
-                  .password(passwordEncoder.encode("admin123"))
-                  .role("ROLE_ADMIN")
+                  .password(passwordEncoder.encode("admin123")) // Contraseña codificada
+                  .role("ROLE_ADMIN") // Asegurar prefijo ROLE_
                   .profileImage("https://via.placeholder.com/150") // Imagen genérica
                   .registrationDate(LocalDateTime.now())
                   .lastLogin(LocalDateTime.now())
@@ -41,17 +41,17 @@ public class InitFakeData implements CommandLineRunner {
         }
         
         // Crear usuarios con ROL USER
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             String email = faker.internet().emailAddress();
             if (userRepository.findByEmail(email).isEmpty()) {
                 User user = User.builder()
                       .name(faker.name().firstName())
                       .lastName(faker.name().lastName())
-                      .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(5))) // Generar
-                      // número móvil de 10 dígitos
+                      .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número
+                      // móvil de 10 dígitos
                       .email(email)
-                      .password(passwordEncoder.encode("user123"))
-                      .role("ROLE_USER")
+                      .password(passwordEncoder.encode("user123")) // Contraseña codificada
+                      .role("ROLE_USER") // Asegurar prefijo ROLE_
                       .profileImage("https://via.placeholder.com/150") // Imagen genérica
                       .registrationDate(LocalDateTime.now())
                       .lastLogin(null) // Último login será null al inicio
