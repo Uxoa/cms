@@ -2,6 +2,8 @@
 
 Un sistema completo para la gestión eficiente de aerolíneas, diseñado para manejar usuarios, vuelos, reservas, aeropuertos y rutas con facilidad.
 
+## **Organización**
+https://trello.com/b/bwAVYMc1/aerolineas
 ---
 
 ## **Características Principales**
