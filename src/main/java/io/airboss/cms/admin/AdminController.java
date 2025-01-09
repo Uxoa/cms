@@ -45,9 +45,10 @@ public class AdminController {
         user.setName(updatedUser.getName());
         user.setLastName(updatedUser.getLastName());
         user.setEmail(updatedUser.getEmail());
-        user.setRole(updatedUser.getRole());
+        user.setRole(updatedUser.getRole()); // Actualiza los roles
         return userRepository.save(user);
     }
+    
     
     // Eliminar un usuario
     @DeleteMapping("/users/{id}")

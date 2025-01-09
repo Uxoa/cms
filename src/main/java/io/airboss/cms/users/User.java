@@ -6,48 +6,47 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 public class User {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
     
-    @Column(name = "nombre", nullable = false)
+    @Column(nullable = false)
     private String name;
-   
-    @Column(name =  "apellido", nullable = false)
+    
+    @Column(nullable = false)
     private String lastName;
     
     @Column(nullable = false, unique = true)
-    private String username;
-    
-    @Column(name = "mobile")
-    private long mobile;
-    
-    @Column(name = "email", unique = true,nullable = false)
     private String email;
     
-    @Column(name = "contraseña", nullable = false)
+    @Column(nullable = false)
     private String password;
     
-    @Column(name = "rol", nullable = false)
-    private String role;
+    @Column(nullable = false)
+    private Long mobile;
     
-    @Column(name = "imagen_perfil")
+    @Column
     private String profileImage;
     
-    @Column(name = "fecha_registro", updatable = false)
+    @Column(nullable = false)
     private LocalDateTime registrationDate;
     
-    @Column(name = "ultimo_login")
+    @Column
     private LocalDateTime lastLogin;
     
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
     
-    public Long getUserId() {
-        return userId;
+    // Getters y Setters
+    
+    public Long getId() {
+        return id;
     }
     
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
     
     public String getName() {
@@ -66,22 +65,6 @@ public class User {
         this.lastName = lastName;
     }
     
-    public String getUsername() {
-        return username;
-    }
-    
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
-    public long getMobile() {
-        return mobile;
-    }
-    
-    public void setMobile(long mobile) {
-        this.mobile = mobile;
-    }
-    
     public String getEmail() {
         return email;
     }
@@ -98,12 +81,12 @@ public class User {
         this.password = password;
     }
     
-    public String getRole() {
-        return role;
+    public Long getMobile() {
+        return mobile;
     }
     
-    public void setRole(String role) {
-        this.role = role;
+    public void setMobile(Long mobile) {
+        this.mobile = mobile;
     }
     
     public String getProfileImage() {
@@ -130,22 +113,11 @@ public class User {
         this.lastLogin = lastLogin;
     }
     
-    public User(Long userId, String name, String lastName, long mobile, String email, String password, String role, String profileImage, LocalDateTime registrationDate, LocalDateTime lastLogin) {
-        this.userId = userId;
-        this.name = name;
-        this.lastName = lastName;
-        this.mobile = mobile;
-        this.email = email;
-        this.password = password;
+    public Role getRole() {
+        return role;
+    }
+    
+    public void setRole(Role role) {
         this.role = role;
-        this.profileImage = profileImage;
-        this.registrationDate = registrationDate;
-        this.lastLogin = lastLogin;
     }
-    
-    
-    public User() {
-    }
-    
-    
 }
