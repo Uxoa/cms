@@ -4,6 +4,7 @@ import io.airboss.cms.entity.User;
 import io.airboss.cms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,6 +62,15 @@ public class UserController {
         } catch (IOException e) {
             throw new RuntimeException("Error al guardar la imagen", e);
         }
+    }
+    
+    
+    
+    //vistas
+    @GetMapping("/user/profile")
+    public String userProfile(Authentication authentication, Model model) {
+        model.addAttribute("userName", authentication.getName());
+        return "user-profile"; // Renderizará templates/user-profile.html
     }
     
     

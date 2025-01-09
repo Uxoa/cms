@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Perfil de Usuario</h1>
+    <p class="text-center">Bienvenido, <strong th:text="${userName}"></strong></p>
+
+    <div class="mt-4">
+        <a href="/user/profile-image" class="btn btn-primary">Actualizar Imagen de Perfil</a>
+        <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
+    </div>
+</div>
+</body>
+</html>

@@ -26,20 +26,23 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
     
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Desactivar CSRF para pruebas iniciales
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
               .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**").permitAll() // Permitir acceso a /auth
-                    .requestMatchers("/admin/**").hasRole("ADMIN") // Protege admin solo para ROLE_ADMIN
-                    .requestMatchers("/user/**").hasRole("USER") // Protege user solo para ROLE_USER
-                    .anyRequest().authenticated() // El resto necesita autenticación
+                    .requestMatchers("/auth/**").permitAll() // Permitir login sin token
+                    .requestMatchers("/login", "/css/**", "/js/**", "/img/**").permitAll() // Permitir acceso a vistas Thymeleaf
+                    .requestMatchers("/admin/**").hasRole("ADMIN") // Acceso para ADMIN
+                    .requestMatchers("/user/**").hasRole("USER") // Acceso para USER
+                    .anyRequest().authenticated()
               )
               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
-
     
     
     @Bean

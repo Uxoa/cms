@@ -4,15 +4,17 @@ import io.airboss.cms.entity.User;
 import io.airboss.cms.repository.UserRepository;
 import io.airboss.cms.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/auth")
 public class AuthController {
     
@@ -25,22 +27,48 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
     
-    // Cambiar para recibir un cuerpo JSON
+    /**
+     * Endpoint para iniciar sesión.
+     * Devuelve el token en una cookie HTTP y un mensaje de éxito.
+     */
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    @ResponseBody
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
         
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty() || !passwordEncoder.matches(password, userOptional.get().getPassword())) {
-            throw new RuntimeException("Credenciales inválidas");
+            return ResponseEntity.status(401).body("Credenciales inválidas");
         }
         
-        io.airboss.cms.entity.User user = userOptional.get();
-        return jwtUtil.generateToken(user.getEmail(), user.getRole());
+        User user = userOptional.get();
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        
+        // Crear una cookie HTTP para el token
+        ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
+              .httpOnly(true) // Evitar acceso a través de JavaScript
+              .secure(false) // Cambiar a true en producción con HTTPS
+              .path("/")
+              .maxAge(24 * 60 * 60) // Expira en 24 horas
+              .build();
+        
+        return ResponseEntity.ok()
+              .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+              .body("Inicio de sesión exitoso");
     }
     
-    // Clase interna para la solicitud de login
+    /**
+     * Página de inicio de sesión (solo para vistas Thymeleaf).
+     */
+    @GetMapping("/login")
+    public String showLoginPage(Model model) {
+        return "login"; // Renderizará la plantilla templates/login.html
+    }
+    
+    /**
+     * Clase interna para representar la solicitud de inicio de sesión.
+     */
     public static class LoginRequest {
         private String email;
         private String password;

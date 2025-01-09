@@ -3,6 +3,7 @@ package io.airboss.cms.controller;
 import io.airboss.cms.entity.User;
 import io.airboss.cms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +53,13 @@ public class AdminController {
     @DeleteMapping("/users/{id}")
     public void deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
+    }
+    
+    //vistas
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model model) {
+        model.addAttribute("welcomeMessage", "Bienvenido al Dashboard de Administrador");
+        return "admin-dashboard"; // Renderizará templates/admin-dashboard.html
     }
     
 }
