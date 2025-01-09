@@ -17,6 +17,9 @@ public class User {
     @Column(name =  "apellido", nullable = false)
     private String lastName;
     
+    @Column(nullable = false, unique = true)
+    private String username;
+    
     @Column(name = "mobile")
     private long mobile;
     
@@ -61,6 +64,14 @@ public class User {
     
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     public long getMobile() {
