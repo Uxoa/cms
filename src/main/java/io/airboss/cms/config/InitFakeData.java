@@ -1,14 +1,15 @@
 package io.airboss.cms.config;
 
 import com.github.javafaker.Faker;
-import io.airboss.cms.entity.User;
-import io.airboss.cms.repository.UserRepository;
+import io.airboss.cms.users.User;
+import io.airboss.cms.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+
 
 @Component
 public class InitFakeData implements CommandLineRunner {
@@ -25,17 +26,16 @@ public class InitFakeData implements CommandLineRunner {
         
         // Crear usuario ADMIN con ROL ADMIN
         if (userRepository.findByEmail("admin@airboss.com").isEmpty()) {
-            User admin = User.builder()
-                  .name("Admin")
-                  .lastName("Admin")
-                  .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número móvil de 9 dígitos
-                  .email("admin@airboss.com")
-                  .password(passwordEncoder.encode("admin123")) // Contraseña codificada
-                  .role("ROLE_ADMIN") // Asignar rol ADMIN
-                  .profileImage("https://via.placeholder.com/150") // Imagen genérica
-                  .registrationDate(LocalDateTime.now())
-                  .lastLogin(LocalDateTime.now())
-                  .build();
+            User admin = new User();
+            admin.setName("Admin");
+            admin.setLastName("Admin");
+            admin.setMobile(123456789L); // Número fijo para admin
+            admin.setEmail("admin@airboss.com");
+            admin.setPassword(passwordEncoder.encode("admin123")); // Contraseña codificada
+            admin.setRole("ROLE_ADMIN"); // Asignar rol ADMIN
+            admin.setProfileImage("https://via.placeholder.com/150"); // Imagen genérica
+            admin.setRegistrationDate(LocalDateTime.now());
+            admin.setLastLogin(LocalDateTime.now());
             userRepository.save(admin);
         }
         
@@ -43,17 +43,16 @@ public class InitFakeData implements CommandLineRunner {
         for (int i = 0; i < 2; i++) {
             String email = faker.internet().emailAddress();
             if (userRepository.findByEmail(email).isEmpty()) {
-                User user = User.builder()
-                      .name(faker.name().firstName())
-                      .lastName(faker.name().lastName())
-                      .mobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))) // Número móvil de 9 dígitos
-                      .email(email)
-                      .password(passwordEncoder.encode("user123")) // Contraseña codificada
-                      .role("ROLE_USER") // Asignar rol USER
-                      .profileImage("https://via.placeholder.com/150") // Imagen genérica
-                      .registrationDate(LocalDateTime.now())
-                      .lastLogin(null) // Último login será null al inicio
-                      .build();
+                User user = new User();
+                user.setName(faker.name().firstName());
+                user.setLastName(faker.name().lastName());
+                user.setMobile(Long.parseLong(faker.phoneNumber().subscriberNumber(9))); // Número móvil de 9 dígitos
+                user.setEmail(email);
+                user.setPassword(passwordEncoder.encode("user123")); // Contraseña codificada
+                user.setRole("ROLE_USER"); // Asignar rol USER
+                user.setProfileImage("https://via.placeholder.com/150"); // Imagen genérica
+                user.setRegistrationDate(LocalDateTime.now());
+                user.setLastLogin(null); // Último login será null al inicio
                 userRepository.save(user);
             }
         }
@@ -63,4 +62,3 @@ public class InitFakeData implements CommandLineRunner {
         System.out.println("- 2 usuarios con ROL_USER creados.");
     }
 }
-

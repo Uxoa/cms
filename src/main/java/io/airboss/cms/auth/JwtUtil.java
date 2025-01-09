@@ -1,4 +1,5 @@
-package io.airboss.cms.util;
+// JwtUtil.java
+package io.airboss.cms.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,20 +12,19 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     
-    // Generar una clave segura para HS256
     private final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     
-    public String generateToken(String email, String role) {
+    public String generateToken(String username, String role) {
         return Jwts.builder()
-              .setSubject(email)
-              .claim("role", role) // Agregar información adicional (rol del usuario)
+              .setSubject(username)
+              .claim("role", role)
               .setIssuedAt(new Date())
-              .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
-              .signWith(SECRET_KEY) // Usar clave segura
+              .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+              .signWith(SECRET_KEY)
               .compact();
     }
     
-    public String extractEmail(String token) {
+    public String extractUsername(String token) {
         return Jwts.parserBuilder()
               .setSigningKey(SECRET_KEY)
               .build()
@@ -47,7 +47,7 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            System.out.println("Error al validar el token: " + e.getMessage());
+            System.out.println("Invalid token: " + e.getMessage());
             return false;
         }
     }

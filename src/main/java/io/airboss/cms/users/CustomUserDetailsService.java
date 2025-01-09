@@ -1,31 +1,28 @@
-package io.airboss.cms.service;
+package io.airboss.cms.users;
 
-import io.airboss.cms.repository.UserRepository;
-import io.airboss.cms.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
-              .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+              .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
         
         return org.springframework.security.core.userdetails.User
-              .withUsername(user.getEmail()) // Usa email como username
-              .password(user.getPassword()) // Contraseña encriptada
-              .roles(user.getRole().replace("ROLE_", "")) // Remueve "ROLE_" para que coincida con Spring Security
+              .withUsername(user.getEmail()) // Usamos el email como username
+              .password(user.getPassword())
+              .roles(user.getRole().replace("ROLE_", ""))
               .build();
     }
 }
-

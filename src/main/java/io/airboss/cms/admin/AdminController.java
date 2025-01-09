@@ -1,7 +1,7 @@
-package io.airboss.cms.controller;
+package io.airboss.cms.admin;
 
-import io.airboss.cms.entity.User;
-import io.airboss.cms.repository.UserRepository;
+import io.airboss.cms.users.User;
+import io.airboss.cms.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

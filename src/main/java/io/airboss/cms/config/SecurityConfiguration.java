@@ -1,13 +1,9 @@
 package io.airboss.cms.config;
 
-import io.airboss.cms.filter.JwtAuthenticationFilter;
-import io.airboss.cms.service.CustomUserDetailsService;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.airboss.cms.auth.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,25 +14,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfiguration {
     
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService; // Asegúrate de que Spring pueda encontrar este bean
-    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        http
+              .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF, ya que estás usando JWT
               .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**").permitAll() // Permitir login sin token
-                    .requestMatchers("/login", "/css/**", "/js/**", "/img/**").permitAll() // Permitir acceso a vistas Thymeleaf
-                    .requestMatchers("/admin/**").hasRole("ADMIN") // Acceso para ADMIN
-                    .requestMatchers("/user/**").hasRole("USER") // Acceso para USER
+                    .requestMatchers("/auth/**").permitAll() // Permitir acceso a autenticación sin token
+                    .requestMatchers("/admin/**").hasRole("ADMIN") // Proteger rutas de administrador
+                    .requestMatchers("/user/**").hasRole("USER") // Proteger rutas de usuario
                     .anyRequest().authenticated()
               )
               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -44,11 +34,9 @@ public class SecurityConfiguration {
         return http.build();
     }
     
-    
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-        return authManagerBuilder.build();
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+              .build();
     }
 }

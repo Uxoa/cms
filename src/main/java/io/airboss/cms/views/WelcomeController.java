@@ -1,4 +1,4 @@
-package io.airboss.cms.controller;
+package io.airboss.cms.views;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package io.airboss.cms.exception;
+package io.airboss.cms.common;
 
 public class GlobalExceptionHandler {
     

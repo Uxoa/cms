@@ -1,6 +1,5 @@
-package io.airboss.cms.repository;
+package io.airboss.cms.airports;
 
-import io.airboss.cms.entity.Airport;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AirportRepository extends JpaRepository<Airport, Long> {

@@ -1,6 +1,5 @@
-package io.airboss.cms.repository;
+package io.airboss.cms.routes;
 
-import io.airboss.cms.entity.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

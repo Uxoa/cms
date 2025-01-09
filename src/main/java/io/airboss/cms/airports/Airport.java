@@ -1,4 +1,4 @@
-package io.airboss.cms.entity;
+package io.airboss.cms.airports;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

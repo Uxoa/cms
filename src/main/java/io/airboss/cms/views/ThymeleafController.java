@@ -1,4 +1,4 @@
-package io.airboss.cms.controller;
+package io.airboss.cms.views;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
