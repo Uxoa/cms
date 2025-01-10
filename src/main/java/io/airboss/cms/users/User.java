@@ -1,21 +1,16 @@
 package io.airboss.cms.users;
 
+import io.airboss.cms.profiles.Profile;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false)
-    private String name;
-    
-    @Column(nullable = false)
-    private String lastName;
+    @Column(name = "user_id") // Define explícitamente el nombre de la columna
+    private Long userId;
     
     @Column(nullable = false, unique = true)
     private String email;
@@ -23,47 +18,33 @@ public class User {
     @Column(nullable = false)
     private String password;
     
-    @Column(nullable = false)
-    private Long mobile;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+          name = "user_roles",
+          joinColumns = @JoinColumn(name = "user_id"),
+          inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
     
-    @Column
-    private String profileImage;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Profile profile;
     
-    @Column(nullable = false)
-    private LocalDateTime registrationDate;
-    
-    @Column
-    private LocalDateTime lastLogin;
-    
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
-    
-    // Getters y Setters
-    
-    public Long getId() {
-        return id;
+    public User(Long userId, String email, String password) {
+        this.userId = userId;
+        this.email = email;
+        this.password = password;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public User() {}
+    
+    public Long getUserId() {
+        return userId;
     }
     
-    public String getName() {
-        return name;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
     
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getLastName() {
-        return lastName;
-    }
-    
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
     
     public String getEmail() {
         return email;
@@ -81,43 +62,20 @@ public class User {
         this.password = password;
     }
     
-    public Long getMobile() {
-        return mobile;
+    public List<Role> getRoles() {
+        return roles;
     }
     
-    public void setMobile(Long mobile) {
-        this.mobile = mobile;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
     
-    public String getProfileImage() {
-        return profileImage;
+    public Profile getProfile() {
+        return profile;
     }
     
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-    
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-    
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-    
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-    
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-    
-    public Role getRole() {
-        return role;
-    }
-    
-    public void setRole(Role role) {
-        this.role = role;
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+        profile.setUser(this); // Bidireccionalidad
     }
 }

@@ -1,32 +1,37 @@
 package io.airboss.cms.users;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
 public class Role {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "role_id") // Define explícitamente el nombre de la columna
+    private Long roleId;
     
     @Column(nullable = false, unique = true)
     private String name;
     
-    // Constructor sin argumentos para JPA
-    public Role() {}
-    
-    public Role(String name) {
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users;
+    public Role(Long roleId, String name) {
+        this.roleId = roleId;
         this.name = name;
     }
     
-    public Long getId() {
-        return id;
+    public Role() {}
+    
+    public Long getRoleId() {
+        return roleId;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
     
     public String getName() {
@@ -37,27 +42,11 @@ public class Role {
         this.name = name;
     }
     
-    @Override
-    public String toString() {
-        return "Role{" +
-              "id=" + id +
-              ", name='" + name + '\'' +
-              '}';
+    public List<User> getUsers() {
+        return users;
     }
     
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
-        return name != null ? name.equals(role.name) : role.name == null;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
-    
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
-    }
-    
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_USER = "ROLE_USER";
 }
