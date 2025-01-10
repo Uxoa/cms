@@ -1,6 +1,7 @@
 package io.airboss.cms.users;
 
 import io.airboss.cms.profiles.Profile;
+import io.airboss.cms.roles.Role;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -9,8 +10,11 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id") // Define explícitamente el nombre de la columna
+    @Column(name = "user_id")
     private Long userId;
+    
+    @Column(nullable = false, unique = true)
+    private String username;
     
     @Column(nullable = false, unique = true)
     private String email;
@@ -45,6 +49,13 @@ public class User {
         this.userId = userId;
     }
     
+    public String getUsername() {
+        return username;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
     
     public String getEmail() {
         return email;
@@ -74,8 +85,12 @@ public class User {
         return profile;
     }
     
+    
+    
     public void setProfile(Profile profile) {
         this.profile = profile;
-        profile.setUser(this); // Bidireccionalidad
+        if (profile != null) {
+            profile.setUser(this); // Bidireccionalidad
+        }
     }
 }

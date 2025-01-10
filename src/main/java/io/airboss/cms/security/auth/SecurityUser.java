@@ -1,14 +1,13 @@
 package io.airboss.cms.security.auth;
 
-import io.airboss.cms.users.Role;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import io.airboss.cms.roles.Role;
 import io.airboss.cms.users.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class SecurityUser implements UserDetails {
     
@@ -30,9 +29,11 @@ public class SecurityUser implements UserDetails {
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : user.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            System.out.println("User role: " + role.getName());
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
+            authorities.add(authority);
         }
         return authorities;
     }

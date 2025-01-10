@@ -1,4 +1,4 @@
-package io.airboss.cms.users;
+package io.airboss.cms.roles;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,14 +1,9 @@
 package io.airboss.cms.profiles;
 
-import io.airboss.cms.users.Role;
 import io.airboss.cms.users.User;
 import jakarta.persistence.*;
-import org.hibernate.generator.values.GeneratedValues;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Table(name = "profiles")

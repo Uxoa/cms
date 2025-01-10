@@ -1,8 +1,7 @@
-package io.airboss.cms.users;
+package io.airboss.cms.roles;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import io.airboss.cms.users.User;
 
 import java.util.List;
 
@@ -19,6 +18,7 @@ public class Role {
     
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
+    
     public Role(Long roleId, String name) {
         this.roleId = roleId;
         this.name = name;

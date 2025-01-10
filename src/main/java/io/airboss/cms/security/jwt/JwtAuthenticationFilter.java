@@ -1,4 +1,3 @@
-// JwtAuthenticationFilter.java
 package io.airboss.cms.security.jwt;
 
 import jakarta.servlet.FilterChain;
@@ -28,15 +27,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
           throws ServletException, IOException {
+        
         String authHeader = request.getHeader("Authorization");
         String jwt = null;
         String username = null;
         
+        // Extrae el token JWT del encabezado Authorization
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             username = jwtService.extractUsername(jwt);
         }
         
+        // Autenticación basada en el token
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             
