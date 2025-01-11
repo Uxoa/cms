@@ -35,17 +35,10 @@ public class SecurityConfiguration {
         http
               .cors(withDefaults()) // Configuración CORS por defecto
               .csrf(csrf -> csrf.disable()) // Desactivar CSRF
-              .authorizeHttpRequests(auth -> auth // Configurar las reglas de autorización
-                    .requestMatchers(endpoint + "/login").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers(endpoint).permitAll() // Principio de mínimos privilegios
-                    .requestMatchers(endpoint + "/public").permitAll()
-                    .requestMatchers(endpoint + "/private").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, endpoint + "/countries").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers(HttpMethod.POST, endpoint + "/countries").hasRole("ADMIN")
-                    .anyRequest().authenticated()
-              )
-              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Añadir el filtro JWT
-        
+              .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/api/login").permitAll()
+                    .anyRequest().authenticated())
+              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Añadir JwtAuthenticationFilter
         return http.build();
     }
     

@@ -1,6 +1,6 @@
 package io.airboss.cms.security.auth;
 
-import io.airboss.cms.security.jwt.JwtTokenProvider;
+import io.airboss.cms.security.jwt.JwtUtil;
 import io.airboss.cms.security.jwt.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +16,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(path = "/api")
 public class AuthController {
     
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
     
+    private final JwtUtil jwtUtil;
+    
+
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtil = jwtUtil;
     }
     
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
-        // Autenticar al usuario
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        System.out.println("Intentando autenticar usuario: " + loginRequest.getUsername());
+        System.out.println("Contraseña recibida: " + loginRequest.getPassword());
+        
         Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
@@ -38,14 +42,24 @@ public class AuthController {
               )
         );
         
-        // Generar token JWT
-        String token = jwtTokenProvider.generateToken(authentication.getName());
+        String username = authentication.getName();
+        System.out.println("Usuario autenticado: " + username);
         
-        // Crear respuesta con el token
+        String token = jwtUtil.generateToken(username);
+        
         Map<String, String> response = new HashMap<>();
-        response.put("token", token);
+        response.put("accessToken", token);
         response.put("message", "Authentication successful");
         
         return ResponseEntity.ok(response);
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout() {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Logout successful");
+        
+        return ResponseEntity.ok(response);
+    }
+    
 }

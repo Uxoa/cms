@@ -17,7 +17,8 @@ import java.util.function.Function;
 public class JwtService {
     
     // Genera una clave segura de 256 bits
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final String SECRET_KEY_BASE64 = "M2NmYTc2ZWYxNDkzN2MxYzBlYTUxOWY4ZmMwNTdhODBmY2QwNGE3NDIwZjhlOGJjZDBhNzU2N2MyNzJlMDA3Yg=="; // Ejemplo de clave en Base64
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(SECRET_KEY_BASE64));
     
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

@@ -29,7 +29,7 @@ public class ProfileController {
     @GetMapping("/profile")
     public String userProfile(Authentication authentication, Model model) {
         String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByUsername(email)
               .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
         model.addAttribute("user", user);
@@ -39,9 +39,8 @@ public class ProfileController {
     @PostMapping("/profile-image")
     public String uploadProfileImage(@RequestParam("image") MultipartFile file, Authentication authentication, Model model) {
         String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByUsername(email)
               .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
         // Guardar la imagen en /static/img
         String fileName = saveImage(file);
         profileRepository.setProfileImage(fileName, user.getProfile().getProfileId());
