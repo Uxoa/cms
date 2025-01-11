@@ -8,6 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -30,17 +31,22 @@ public class User {
     )
     private List<Role> roles;
     
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
     private Profile profile;
     
-    public User(Long userId, String email, String password) {
+    // Constructor para inicializar campos esenciales
+    public User(Long userId, String username, String email, String password) {
         this.userId = userId;
+        this.username = username;
         this.email = email;
         this.password = password;
     }
     
+    // Constructor sin parámetros (necesario para JPA)
     public User() {}
     
+    // Getters y setters
     public Long getUserId() {
         return userId;
     }
@@ -85,12 +91,23 @@ public class User {
         return profile;
     }
     
-    
-    
     public void setProfile(Profile profile) {
         this.profile = profile;
         if (profile != null) {
             profile.setUser(this); // Bidireccionalidad
         }
+    }
+    
+    // Método toString para debugging
+    //  No incluyo password ni profile por razones de privacidad y
+    //  para evitar cargar datos innecesarios.
+    @Override
+    public String toString() {
+        return "User{" +
+              "userId=" + userId +
+              ", username='" + username + '\'' +
+              ", email='" + email + '\'' +
+              ", roles=" + roles +
+              '}';
     }
 }

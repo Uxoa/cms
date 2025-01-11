@@ -1,8 +1,9 @@
 package io.airboss.cms.airports;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface AirportRepository extends JpaRepository<Airport, Long> {
-    // Métodos personalizados
-    Airport findByCode(String code);
+@Transactional
+public interface AirportRepository extends JpaRepository<Airport, String> {
+
 }

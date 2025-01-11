@@ -1,33 +1,61 @@
 package io.airboss.cms.airports;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
 @Entity
-@Table(name = "airports")
 public class Airport {
     
+ 
+    private String iataCode;
+    private String name;
+    private String countryIsoCode;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "airport_id")
-    private Long airportId;
+    @GeneratedValue
+    private Long id;
     
-    @Column(name = "nombre_aeropuerto", nullable = false)
-    private String airportName;
+    public Airport() {
+        super();
+    }
     
-    @Column(name = "Codigo", unique = true, nullable = false)
-    private String code;
+    public Airport(String iataCode, String name, String countryIsoCode) {
+        super();
+        this.iataCode = iataCode;
+        this.name = name;
+        this.countryIsoCode = countryIsoCode;
+    }
     
-    @Column(name = "Ciudad", nullable = false)
-    private String city;
+    public String getIataCode() {
+        return iataCode;
+    }
     
-    @Column(name = "Pais", nullable = false)
-    private String country;
+    public void setIataCode(String iataCode) {
+        this.iataCode = iataCode;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getCountryIsoCode() {
+        return countryIsoCode;
+    }
+    
+    public void setCountryIsoCode(String countryIsoCode) {
+        this.countryIsoCode = countryIsoCode;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public Long getId() {
+        return id;
+    }
 }
