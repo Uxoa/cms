@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.AuthenticationException;
 
-
 import java.util.Map;
 
 @RestController
@@ -37,7 +36,6 @@ public class LoginController {
                   new UsernamePasswordAuthenticationToken(username, password)
             );
             
-            // Generar el JWT
             String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
             
             return ResponseEntity.ok(Map.of("accessToken", token));
