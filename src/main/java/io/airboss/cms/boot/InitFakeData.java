@@ -1,4 +1,4 @@
-//package io.airboss.cms.config;
+//package io.airboss.cms.boot;
 //
 //import com.github.javafaker.Faker;
 //import io.airboss.cms.roles.Role;

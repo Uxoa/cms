@@ -14,7 +14,7 @@ public class Airport {
     private String countryIsoCode;
     @Id
     @GeneratedValue
-    private Long id;
+    private Long airportId;
     
     public Airport() {
         super();
@@ -51,11 +51,11 @@ public class Airport {
         this.countryIsoCode = countryIsoCode;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public Long getAirportId() {
+        return airportId;
     }
     
-    public Long getId() {
-        return id;
+    public void setAirportId(Long airportId) {
+        this.airportId = airportId;
     }
 }
