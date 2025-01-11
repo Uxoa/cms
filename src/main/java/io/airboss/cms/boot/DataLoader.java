@@ -50,11 +50,12 @@ public class DataLoader {
     }
     
     @Bean
-    @Order(1)
+    @Order(2)
     CommandLineRunner loadFlights(FlightRepository flightRepository) {
         return (args) -> {
-            loadFromCsv(resourceLoader, flightsFile, v -> new Flight(v[0], v[1], v[2], Integer.parseInt(v[3]), Integer.parseInt(v[4]), Boolean.parseBoolean(v[5])),
-                    flightRepository);
+            loadFromCsv(resourceLoader, flightsFile, v -> new Flight(
+                    v[0], v[1], v[2], Integer.parseInt(v[3]), Integer.parseInt(v[4]), Boolean.parseBoolean(v[5]), v[6]
+            ), flightRepository);
         };
     }
     
@@ -65,25 +66,26 @@ public class DataLoader {
         Resource resource = resourceLoader.getResource("classpath:" + sourceCsvFile);
         
         try (Stream<String> stream = Files.lines(Paths.get(resource.getFile().getAbsolutePath()))) {
-            stream.forEach(line -> {
-                logger.debug("++++++++++++++" + line);
-                try {
-                    String[] values = line.split(",");
-                    Object entity = objectMapper.apply(values);
-                    repo.save(entity);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            stream.skip(1) // Omitir la primera fila (cabecera)
+                  .forEach(line -> {
+                      logger.debug("++++++++++++++ " + line);
+                      try {
+                          String[] values = line.split(",");
+                          Object entity = objectMapper.apply(values);
+                          repo.save(entity);
+                      } catch (Exception e) {
+                          logger.error("Error processing line: " + line, e);
+                      }
+                  });
             
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading file: " + sourceCsvFile, e);
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
         logger.debug("++++++++++++++ Loading " + sourceCsvFile + " DONE !");
-        
     }
+    
     
     public AirportRepository getAirportRepository() {
         return airportRepository;

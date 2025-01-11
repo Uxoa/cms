@@ -1,0 +1,137 @@
+{
+    "info": {
+        "name": "Profile Management API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Profiles",
+            "item": [
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:8080/api/profiles",
+                            "protocol": "http",
+                            "host": [
+                                "localhost:8080"
+                            ],
+                            "path": [
+                                "api",
+                                "profiles"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Profile",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\": \"John\", \"lastName\": \"Doe\", \"mobile\": 1234567890, \"registrationDate\": \"2025-01-01T10:00:00\"}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/profiles",
+                            "protocol": "http",
+                            "host": [
+                                "localhost:8080"
+                            ],
+                            "path": [
+                                "api",
+                                "profiles"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\": \"Jane\", \"lastName\": \"Doe\", \"mobile\": 9876543210}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/profiles/1",
+                            "protocol": "http",
+                            "host": [
+                                "localhost:8080"
+                            ],
+                            "path": [
+                                "api",
+                                "profiles",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Profile",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:8080/api/profiles/1",
+                            "protocol": "http",
+                            "host": [
+                                "localhost:8080"
+                            ],
+                            "path": [
+                                "api",
+                                "profiles",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Upload Profile Image",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "multipart/form-data"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/profiles/upload-image",
+                            "protocol": "http",
+                            "host": [
+                                "localhost:8080"
+                            ],
+                            "path": [
+                                "api",
+                                "profiles",
+                                "upload-image"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
