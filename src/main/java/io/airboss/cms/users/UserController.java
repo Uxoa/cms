@@ -1,38 +1,45 @@
 package io.airboss.cms.users;
 
-import io.airboss.cms.roles.Role;
-import io.airboss.cms.roles.RoleRepository;
+import io.airboss.cms.profiles.Profile;
+import io.airboss.cms.users.User;
+import io.airboss.cms.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/users")
 public class UserController {
-    
     @Autowired
     private UserService userService;
     
-    @Autowired
-    private UserRepository userRepository;
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user,
+                                           @RequestParam Profile profile,
+                                           @RequestParam List<String> roles) {
+        return ResponseEntity.ok(userService.createUser(user, profile, roles));
+    }
     
-    @Autowired
-    private RoleRepository roleRepository;
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
     
-    @PostMapping("/add")
-    public ResponseEntity<String> addUser(@RequestBody User user) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword())); // Encriptar contraseña
-        
-        // Asignar roles predeterminados
-        Role defaultRole = roleRepository.findByName("ROLE_USER")
-              .orElseThrow(() -> new RuntimeException("Default role not found"));
-        user.setRoles(List.of(defaultRole));
-        
-        userRepository.save(user);
-        return ResponseEntity.ok("Usuario agregado correctamente con rol predeterminado");
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("Usuario eliminado correctamente");
     }
 }

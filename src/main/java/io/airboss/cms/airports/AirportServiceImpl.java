@@ -2,6 +2,7 @@ package io.airboss.cms.airports;
 
 import java.util.List;
 
+import io.airboss.cms.airports.exceptions.AirportNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

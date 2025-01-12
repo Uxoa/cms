@@ -2,36 +2,35 @@ package io.airboss.cms.roles;
 
 import jakarta.persistence.*;
 import io.airboss.cms.users.User;
-
-import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "roles")
 public class Role {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id") // Define explícitamente el nombre de la columna
-    private Long roleId;
+    private Long id;
     
     @Column(nullable = false, unique = true)
     private String name;
     
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    private Set<User> users;
     
-    public Role(Long roleId, String name) {
-        this.roleId = roleId;
+    // Constructores
+    public Role() {}
+    
+    public Role(String name) {
         this.name = name;
     }
     
-    public Role() {}
-    
-    public Long getRoleId() {
-        return roleId;
+    // Getters y Setters
+    public Long getId() {
+        return id;
     }
     
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setId(Long id) {
+        this.id = id;
     }
     
     public String getName() {
@@ -42,11 +41,11 @@ public class Role {
         this.name = name;
     }
     
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
     
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 }

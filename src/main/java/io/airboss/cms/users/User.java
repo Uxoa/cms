@@ -1,14 +1,16 @@
 package io.airboss.cms.users;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.airboss.cms.profiles.Profile;
 import io.airboss.cms.roles.Role;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -23,6 +25,11 @@ public class User {
     @Column(nullable = false)
     private String password;
     
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
+    @JsonManagedReference // Controla la serialización en el lado propietario
+    private Profile profile;
+    
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
           name = "user_roles",
@@ -31,20 +38,16 @@ public class User {
     )
     private List<Role> roles;
     
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+    // Constructores
+    public User() {}
     
-    // Constructor para inicializar campos esenciales
-    public User(Long userId, String username, String email, String password) {
-        this.userId = userId;
+    public User(String username, String email, String password, Profile profile, List<Role> roles) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.profile = profile;
+        this.roles = roles;
     }
-    
-    // Constructor sin parámetros (necesario para JPA)
-    public User() {}
     
     // Getters y setters
     public Long getUserId() {
@@ -79,14 +82,6 @@ public class User {
         this.password = password;
     }
     
-    public List<Role> getRoles() {
-        return roles;
-    }
-    
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-    
     public Profile getProfile() {
         return profile;
     }
@@ -94,20 +89,15 @@ public class User {
     public void setProfile(Profile profile) {
         this.profile = profile;
         if (profile != null) {
-            profile.setUser(this); // Bidireccionalidad
+            profile.setUser(this); // Establecer bidireccionalidad
         }
     }
     
-    // Método toString para debugging
-    //  No incluyo password ni profile por razones de privacidad y
-    //  para evitar cargar datos innecesarios.
-    @Override
-    public String toString() {
-        return "User{" +
-              "userId=" + userId +
-              ", username='" + username + '\'' +
-              ", email='" + email + '\'' +
-              ", roles=" + roles +
-              '}';
+    public List<Role> getRoles() {
+        return roles;
+    }
+    
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }
