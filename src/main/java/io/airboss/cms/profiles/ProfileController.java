@@ -1,6 +1,7 @@
 package io.airboss.cms.profiles;
 
 import io.airboss.cms.profiles.ProfileService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ public class ProfileController {
     private ProfileService profileService;
     
     @PostMapping
-    public ResponseEntity<Profile> createProfile(@RequestBody Profile profile) {
+    public ResponseEntity<Profile> createProfile(@Valid @RequestBody Profile profile) {
         return ResponseEntity.ok(profileService.createProfile(profile));
     }
     
@@ -22,7 +23,7 @@ public class ProfileController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Profile> updateProfile(@PathVariable Long id, @RequestBody Profile updatedProfile) {
+    public ResponseEntity<Profile> updateProfile(@PathVariable Long id, @Valid @RequestBody Profile updatedProfile) {
         return ResponseEntity.ok(profileService.updateProfile(id, updatedProfile));
     }
     

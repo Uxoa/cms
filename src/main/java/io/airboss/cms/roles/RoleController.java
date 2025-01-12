@@ -1,6 +1,5 @@
 package io.airboss.cms.roles;
 
-import io.airboss.cms.roles.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/roles")
 public class RoleController {
+    
     @Autowired
     private RoleService roleService;
     

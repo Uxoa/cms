@@ -1,36 +1,37 @@
 package io.airboss.cms.roles;
 
-import jakarta.persistence.*;
 import io.airboss.cms.users.User;
-import java.util.Set;
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "roles")
 public class Role {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "role_id")
+    private Long roleId;
     
     @Column(nullable = false, unique = true)
     private String name;
     
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private Set<User> users;
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users = new ArrayList<>();
     
-    // Constructores
     public Role() {}
     
     public Role(String name) {
         this.name = name;
     }
     
-    // Getters y Setters
-    public Long getId() {
-        return id;
+    public Long getRoleId() {
+        return roleId;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
     
     public String getName() {
@@ -41,11 +42,11 @@ public class Role {
         this.name = name;
     }
     
-    public Set<User> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
     
-    public void setUsers(Set<User> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 }

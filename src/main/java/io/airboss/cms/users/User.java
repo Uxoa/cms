@@ -1,34 +1,23 @@
 package io.airboss.cms.users;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import io.airboss.cms.profiles.Profile;
 import io.airboss.cms.roles.Role;
+import io.airboss.cms.bookings.Booking;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "users")
 public class User {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
     
     @Column(nullable = false, unique = true)
     private String username;
     
-    @Column(nullable = false, unique = true)
-    private String email;
-    
     @Column(nullable = false)
     private String password;
-    
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", referencedColumnName = "profileId")
-    @JsonManagedReference // Controla la serialización en el lado propietario
-    private Profile profile;
     
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -36,26 +25,24 @@ public class User {
           joinColumns = @JoinColumn(name = "user_id"),
           inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
     
-    // Constructores
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Booking> bookings;
+    
     public User() {}
     
-    public User(String username, String email, String password, Profile profile, List<Role> roles) {
+    public User(String username, String password) {
         this.username = username;
-        this.email = email;
         this.password = password;
-        this.profile = profile;
-        this.roles = roles;
     }
     
-    // Getters y setters
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
     
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
     
     public String getUsername() {
@@ -66,14 +53,6 @@ public class User {
         this.username = username;
     }
     
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
     public String getPassword() {
         return password;
     }
@@ -82,22 +61,19 @@ public class User {
         this.password = password;
     }
     
-    public Profile getProfile() {
-        return profile;
-    }
-    
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-        if (profile != null) {
-            profile.setUser(this); // Establecer bidireccionalidad
-        }
-    }
-    
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
     
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+    
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+    
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
 }

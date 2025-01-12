@@ -69,13 +69,11 @@ public class DataLoader {
     @Autowired
     private ProfileRepository profileRepository;
     
-    
     @Bean
     @Order(1)
     CommandLineRunner loadRoles() {
         return args -> loadFromCsv(ROLES_FILE, values ->
               new Role(values[0]), roleRepository);
-        
     }
     
     @Bean
@@ -105,9 +103,9 @@ public class DataLoader {
     CommandLineRunner loadUsersAndProfiles() {
         return args -> loadFromCsv(USERS_FILE, values -> {
             // Verificar si el usuario ya existe
-            Optional<User> existingUser = userRepository.findByEmail(values[1]);
+            Optional<User> existingUser = userRepository.findByUsername(values[0]);
             if (existingUser.isPresent()) {
-                logger.warn("Usuario con email {} ya existe. Omitiendo.", values[1]);
+                logger.warn("Usuario con username {} ya existe. Omitiendo.", values[0]);
                 return null;
             }
             
@@ -116,15 +114,14 @@ public class DataLoader {
             // Crear nuevo usuario
             User user = new User();
             user.setUsername(values[0]);
-            user.setEmail(values[1]);
-            user.setPassword(encoder.encode(values[2]));
+            user.setPassword(encoder.encode(values[1]));
             
             // Crear perfil
             Profile profile = new Profile();
-            profile.setName(values[3]);
-            profile.setLastName(values[4]);
-            profile.setMobile(Long.parseLong(values[5]));
-            profile.setProfileImage(values[6]);
+            profile.setName(values[2]);
+            profile.setLastName(values[3]);
+            profile.setMobile(Long.parseLong(values[4]));
+            profile.setProfileImage(values[5]);
             profile.setRegistrationDate(LocalDateTime.now());
             profile.setLastLogin(LocalDateTime.now());
             profile.setUser(user);
@@ -133,14 +130,14 @@ public class DataLoader {
             profileRepository.save(profile);
             
             // Asignar roles
-            List<Role> roles = Arrays.stream(values[7].split(","))
-                                     .map(roleRepository::findByName)
-                                     .filter(Optional::isPresent)
-                                     .map(Optional::get)
-                                     .collect(Collectors.toList());
-            user.setRoles(roles);
+            List<Role> roles = Arrays.stream(values[6].split(","))
+                  .map(roleRepository::findByName)
+                  .filter(Optional::isPresent)
+                  .map(Optional::get)
+                  .collect(Collectors.toList());
+            user.setRoles(roles.stream().collect(Collectors.toSet()));
             
-            // Guardar usuario con perfil (esto automáticamente guarda las relaciones en user_roles)
+            // Guardar usuario con perfil
             userRepository.save(user);
             
             logger.info("Usuario {} creado con roles: {}", user.getUsername(), roles.stream().map(Role::getName).toList());
@@ -157,7 +154,7 @@ public class DataLoader {
             var flight = flightRepository.findById(flightId).orElse(null);
             if (flight == null) {
                 logger.warn("Vuelo no encontrado con ID: {}. Línea omitida.", flightId);
-                return null; // Omite esta línea
+                return null;
             }
             
             // Buscar usuario
@@ -165,7 +162,7 @@ public class DataLoader {
             var user = userRepository.findById(userId).orElse(null);
             if (user == null) {
                 logger.warn("Usuario no encontrado con ID: {}. Línea omitida.", userId);
-                return null; // Omite esta línea
+                return null;
             }
             
             // Crear y devolver la reserva
@@ -200,3 +197,4 @@ public class DataLoader {
         }
     }
 }
+
