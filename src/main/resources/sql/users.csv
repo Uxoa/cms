@@ -1,4 +1,0 @@
-username,email,password,profile_id,last_name,mobile,profile_image,registration_date,roles
-admin,admin@example.com,password,13,Admin,1234567890,https://example.com/admin.jpg,2025-01-01T08:00:00,ROLE_ADMIN
-user1,user1@example.com,password,14,Doe,9876543210,https://example.com/user1.jpg,2025-01-02T08:00:00,ROLE_USER
-user2,user2@example.com,password,15,Doe,1122334455,https://example.com/user2.jpg,2025-01-03T08:00:00,ROLE_USER;ROLE_ADMIN
