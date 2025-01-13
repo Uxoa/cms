@@ -1,0 +1,4 @@
+user_id,flight_id,number_of_seats,status
+9,1,2,CONFIRMED
+10,2,1,PENDING
+11,3,4,CANCELLED

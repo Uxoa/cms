@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 public class DataLoader {
     private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
     private static final String airportsFile = "cvs/airports.csv";
-  
     
     @Autowired
     private ResourceLoader resourceLoader;

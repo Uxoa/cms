@@ -1,0 +1,4 @@
+first_name,last_name,mobile,profile_image,registration_date,last_login
+1,Admin,Admin,1234567890,https://example.com/admin.jpg,2025-01-01T08:00:00,2025-01-10T18:00:00
+2,John,Doe,9876543210,https://example.com/user1.jpg,2025-01-02T08:00:00,2025-01-11T18:00:00
+3,Jane,Doe,1122334455,https://example.com/user2.jpg,2025-01-03T08:00:00,2025-01-12T18:00:00

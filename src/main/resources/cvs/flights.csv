@@ -1,0 +1,4 @@
+origin,destination,departure_time,total_seats,available_seats,is_available,airline_name
+JFK,LAX,2025-01-15T10:00:00,200,200,true,StarFlight
+LAX,ORD,2025-01-16T12:00:00,150,150,true,YesWeFly
+ORD,MIA,2025-01-17T14:00:00,180,180,true,FlyAway
