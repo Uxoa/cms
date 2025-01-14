@@ -1,11 +1,12 @@
 package io.airboss.cms.security.auth;
 
-import io.airboss.cms.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,24 +20,17 @@ import java.util.Map;
 public class AuthController {
     
     private final AuthenticationManager authenticationManager;
-    
-    private final JwtUtil jwtUtil;
-    
     private final TokenService tokenService;
     
-
     @Autowired
-    public AuthController(TokenService tokenService) {
+    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
         this.tokenService = tokenService;
     }
     
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("Intentando autenticar usuario: " + loginRequest.getUsername());
-        System.out.println("Contraseña recibida: " + loginRequest.getPassword());
-        
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
+        // Autenticar al usuario
         Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
@@ -44,29 +38,28 @@ public class AuthController {
               )
         );
         
+        // Establecer el contexto de seguridad
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         
+        // Generar el token JWT
+        String token = tokenService.generateToken(authentication);
         
-        
-        
-    
-    
-    @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout() {
+        // Crear respuesta con el token
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Logout successful");
+        response.put("message", "Authentication successful");
+        response.put("username", authentication.getName());
+        response.put("roles", authentication.getAuthorities().toString());
+        response.put("token", token);
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     
-    public AuthController(TokenService tokenService) {
-            this.tokenService = tokenService;
-        }
-        
-        @PostMapping("/token")
-        public String token(Authentication authentication) {
-            return tokenService.generateToken(authentication);
-        }
-        
-        
+    @PostMapping("/token")
+    public ResponseEntity<String> generateToken(Authentication authentication) {
+        // Generar un nuevo token basado en la autenticación actual
+        String token = tokenService.generateToken(authentication);
+        return ResponseEntity.ok(token);
     }
 }
+
+

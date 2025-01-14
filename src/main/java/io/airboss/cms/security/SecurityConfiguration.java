@@ -1,21 +1,27 @@
 package io.airboss.cms.security;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.authorization.OAuth2AuthorizationManagers.hasScope;
 
 import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import io.airboss.cms.security.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -23,7 +29,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,29 +40,39 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 @EnableWebSecurity
 public class SecurityConfiguration {
     
-    @Value("${jwt.key}")
+    @Value("${jwt.secret}")
     private String key;
     
     @Value("${api-endpoint}")
     private String endpoint;
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+    
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
-              .cors(cors -> cors.configurationSource(corsConfiguration()))
-              .csrf(csfr -> csfr.disable())
+              .cors(withDefaults()) // Configuración CORS por defecto
+              .csrf(csrf -> csrf.disable()) // Desactivar CSRF
               .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                    .requestMatchers(HttpMethod.GET, endpoint).permitAll()
-                    .requestMatchers(HttpMethod.POST, endpoint + "/auth/token").hasRole("USER")
-                    .requestMatchers(endpoint + "/private").access(hasScope("READ"))
-                    .anyRequest().access(hasScope("READ")))
-              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-              .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())))
-              // .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
-              .httpBasic(Customizer.withDefaults());
-        
-        http.headers(header -> header.frameOptions(frame -> frame.sameOrigin()));
+                    // Permitir acceso público a ciertas rutas
+                    .requestMatchers(endpoint + "/auth/login",endpoint + "/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.GET, endpoint +"public/**").permitAll()
+                    // Rutas protegidas según roles
+                    .requestMatchers(endpoint +"/admin/**").hasRole("ADMIN")
+                    .requestMatchers(endpoint +"/user/**").hasAnyRole("USER", "ADMIN")
+                    // Proteger cualquier otra ruta anyRequest().authenticated()
+              )
+              .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin estado para JWT
+              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
@@ -85,14 +101,6 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    
-    @Bean
-    UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager(
-              User.withUsername("giaco")
-                    .password("{noop}password")
-                    .authorities("READ", "ROLE_USER")
-                    .build());
-    }
+
     
 }
