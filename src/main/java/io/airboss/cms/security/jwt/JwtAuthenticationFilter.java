@@ -26,38 +26,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JpaUserDetailsService userDetailsService;
     
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
           throws ServletException, IOException {
-        // Obtener el encabezado Authorization
+        
         final String authorizationHeader = request.getHeader("Authorization");
         
-        String username = null;
-        String token = null;
-        
-        // Verificar si el encabezado contiene un token Bearer
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7); // Quitar "Bearer " del token
-            username = jwtUtil.extractUsername(token);   // Extraer el email (username) del token
-        }
-        
-        // Si se obtuvo un email y no hay autenticación previa en el contexto de seguridad
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            String token = authorizationHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
             
-            // Validar el token usando el username del usuario
-            if (jwtUtil.validateToken(token, userDetails.getUsername())) {
-                // Crear el token de autenticación para el contexto de seguridad
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                      userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 
-                // Establecer la autenticación en el contexto de seguridad
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtUtil.validateToken(token, userDetails.getUsername())) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                          userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         }
-        
-        // Continuar con la cadena de filtros
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
     
   

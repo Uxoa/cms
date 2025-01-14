@@ -20,6 +20,9 @@ public class Profile {
     private String lastName;
     
     @Column(nullable = false)
+    private String email;
+    
+    @Column(nullable = false)
     private Long mobile;
     
     @Column
@@ -39,10 +42,11 @@ public class Profile {
     // Constructores
     public Profile() {}
     
-    public Profile(String name, String lastName, Long mobile, String profileImage,
+    public Profile(String name, String lastName,String email,  Long mobile, String profileImage,
                    LocalDateTime registrationDate, LocalDateTime lastLogin) {
         this.name = name;
         this.lastName = lastName;
+        this.email = email;
         this.mobile = mobile;
         this.profileImage = profileImage;
         this.registrationDate = registrationDate;
@@ -72,6 +76,14 @@ public class Profile {
     
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
     
     public Long getMobile() {

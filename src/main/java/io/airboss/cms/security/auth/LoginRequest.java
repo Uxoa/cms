@@ -1,4 +1,4 @@
-package io.airboss.cms.security.jwt;
+package io.airboss.cms.security.auth;
 
 public class LoginRequest {
     private String username;

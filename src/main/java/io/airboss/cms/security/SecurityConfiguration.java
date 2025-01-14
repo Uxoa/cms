@@ -1,14 +1,14 @@
 package io.airboss.cms.security;
 
+import io.airboss.cms.security.auth.JpaUserDetailsService;
 import io.airboss.cms.security.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,9 +19,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfiguration {
     
-    @Value("${api-endpoint}")
-    String endpoint;
-    
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     
@@ -31,19 +28,22 @@ public class SecurityConfiguration {
     }
     
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+    
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
               .cors(withDefaults()) // Configuración CORS por defecto
               .csrf(csrf -> csrf.disable()) // Desactivar CSRF
               .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/login").permitAll()
-                    .anyRequest().authenticated())
-              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Añadir JwtAuthenticationFilter
+                    .requestMatchers("/api/login").permitAll() // Permitir acceso público al login
+                    .anyRequest().authenticated()) // Proteger todos los demás endpoints
+              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Añadir JwtAuthenticationFilter
+              .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Sin estado para JWT
+        
         return http.build();
-    }
-    
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+    };
 }

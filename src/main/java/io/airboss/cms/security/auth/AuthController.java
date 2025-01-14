@@ -1,7 +1,6 @@
 package io.airboss.cms.security.auth;
 
 import io.airboss.cms.security.jwt.JwtUtil;
-import io.airboss.cms.security.jwt.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,10 +45,11 @@ public class AuthController {
         System.out.println("Usuario autenticado: " + username);
         
         String token = jwtUtil.generateToken(username);
+        System.out.println("Token generado: " + token);
         
         Map<String, String> response = new HashMap<>();
         response.put("accessToken", token);
-        response.put("message", "Authentication successful");
+        response.put("message", "Authentication successful!");
         
         return ResponseEntity.ok(response);
     }

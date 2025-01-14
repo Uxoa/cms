@@ -23,6 +23,7 @@ public class ProfileService {
         Profile profile = getProfileById(id);
         profile.setName(updatedProfile.getName());
         profile.setLastName(updatedProfile.getLastName());
+        profile.setEmail(updatedProfile.getEmail());
         profile.setMobile(updatedProfile.getMobile());
         return profileRepository.save(profile);
     }

@@ -3,14 +3,15 @@ package io.airboss.cms.security.jwt;
 import io.airboss.cms.roles.Role;
 import io.airboss.cms.users.User;
 import io.airboss.cms.users.UserRepository;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -44,8 +45,6 @@ public class JwtUtil {
               .signWith(SignatureAlgorithm.HS256, secret)
               .compact();
     }
-    
-    
     
     // Extraer username del token
     public String extractUsername(String token) {
