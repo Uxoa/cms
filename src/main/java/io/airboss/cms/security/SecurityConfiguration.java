@@ -1,49 +1,98 @@
 package io.airboss.cms.security;
 
-import io.airboss.cms.security.auth.JpaUserDetailsService;
-import io.airboss.cms.security.jwt.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.security.oauth2.core.authorization.OAuth2AuthorizationManagers.hasScope;
+
+import java.util.Arrays;
+
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
     
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Value("${jwt.key}")
+    private String key;
     
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+    @Value("${api-endpoint}")
+    private String endpoint;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-              .cors(withDefaults()) // Configuración CORS por defecto
-              .csrf(csrf -> csrf.disable()) // Desactivar CSRF
+              .cors(cors -> cors.configurationSource(corsConfiguration()))
+              .csrf(csfr -> csfr.disable())
               .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/login").permitAll() // Permitir acceso público al login
-                    .anyRequest().authenticated()) // Proteger todos los demás endpoints
-              .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Añadir JwtAuthenticationFilter
-              .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Sin estado para JWT
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                    .requestMatchers(HttpMethod.GET, endpoint).permitAll()
+                    .requestMatchers(HttpMethod.POST, endpoint + "/auth/token").hasRole("USER")
+                    .requestMatchers(endpoint + "/private").access(hasScope("READ"))
+                    .anyRequest().access(hasScope("READ")))
+              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+              .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtDecoder())))
+              // .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
+              .httpBasic(Customizer.withDefaults());
+        
+        http.headers(header -> header.frameOptions(frame -> frame.sameOrigin()));
         
         return http.build();
-    };
+    }
+    
+    @Bean
+    JwtEncoder jwtEncoder() {
+        return new NimbusJwtEncoder(new ImmutableSecret<>(key.getBytes()));
+    }
+    
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        byte[] bytes = key.getBytes();
+        SecretKeySpec secretKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+        return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build();
+    }
+    
+    @Bean
+    CorsConfigurationSource corsConfiguration() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization"));
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+    
+    @Bean
+    UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+              User.withUsername("giaco")
+                    .password("{noop}password")
+                    .authorities("READ", "ROLE_USER")
+                    .build());
+    }
+    
 }

@@ -15,18 +15,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "${api-endpoint}/auth")
 public class AuthController {
     
     private final AuthenticationManager authenticationManager;
     
     private final JwtUtil jwtUtil;
     
+    private final TokenService tokenService;
+    
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AuthController(TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.tokenService = tokenService;
     }
     
     @PostMapping("/login")
@@ -41,18 +44,11 @@ public class AuthController {
               )
         );
         
-        String username = authentication.getName();
-        System.out.println("Usuario autenticado: " + username);
         
-        String token = jwtUtil.generateToken(username);
-        System.out.println("Token generado: " + token);
         
-        Map<String, String> response = new HashMap<>();
-        response.put("accessToken", token);
-        response.put("message", "Authentication successful!");
         
-        return ResponseEntity.ok(response);
-    }
+        
+    
     
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout() {
@@ -62,4 +58,15 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
     
+    public AuthController(TokenService tokenService) {
+            this.tokenService = tokenService;
+        }
+        
+        @PostMapping("/token")
+        public String token(Authentication authentication) {
+            return tokenService.generateToken(authentication);
+        }
+        
+        
+    }
 }
