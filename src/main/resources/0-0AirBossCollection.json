@@ -1,0 +1,177 @@
+{
+    "info": {
+        "name": "0-0AirBossCollection.json",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Login",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"your-password\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8080/api/login",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "login"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Airports",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer your-token",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:8080/api/airports",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "airports"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create Flight",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer your-token",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"origin\": \"LAX\",\n  \"destination\": \"JFK\",\n  \"departureTime\": \"2025-01-14T10:00:00\",\n  \"totalSeats\": 200,\n  \"availableSeats\": 150,\n  \"isAvailable\": true,\n  \"airlineName\": \"American Airlines\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8080/api/flights",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "flights"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Flights",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer your-token",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:8080/api/flights",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "flights"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create Booking",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer your-token",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"userId\": 2,\n  \"flightId\": 1,\n  \"numberOfSeats\": 2\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8080/api/bookings",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "bookings"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Bookings",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer your-token",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:8080/api/bookings",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "bookings"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Booking By User",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer your-token",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:8080/api/bookings/user/2",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8080",
+                    "path": ["api", "bookings", "user", "2"]
+                }
+            },
+            "response": []
+        }
+    ]
+}

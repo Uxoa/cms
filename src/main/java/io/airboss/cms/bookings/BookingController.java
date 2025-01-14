@@ -20,7 +20,7 @@ public class BookingController {
     @GetMapping("/me")
     public ResponseEntity<List<Booking>> getMyBookings(Authentication authentication) {
         Long userId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok(bookingRepository.findByUserUserId(userId));
+        return ResponseEntity.ok(bookingRepository.findByUserId(userId));
     }
     
     @PostMapping

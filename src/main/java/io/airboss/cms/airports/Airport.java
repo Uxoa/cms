@@ -1,20 +1,21 @@
 package io.airboss.cms.airports;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "airports")
 public class Airport {
     
- 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "airport_id")
+    private Long airportId;
+    
+    
     private String iataCode;
     private String name;
     private String countryIsoCode;
-    @Id
-    @GeneratedValue
-    private Long id;
     
     public Airport() {
         super();
@@ -51,11 +52,11 @@ public class Airport {
         this.countryIsoCode = countryIsoCode;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public Long getAirportId() {
+        return airportId;
     }
     
-    public Long getId() {
-        return id;
+    public void setAirportId(Long airportId) {
+        this.airportId = airportId;
     }
 }

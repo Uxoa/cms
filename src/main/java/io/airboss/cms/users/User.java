@@ -1,9 +1,10 @@
 package io.airboss.cms.users;
 
-import io.airboss.cms.profiles.Profile;
 import io.airboss.cms.roles.Role;
+import io.airboss.cms.bookings.Booking;
 import jakarta.persistence.*;
-import java.util.List;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -11,13 +12,12 @@ public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
     
     @Column(nullable = false, unique = true)
     private String username;
     
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
     
     @Column(nullable = false)
@@ -29,30 +29,27 @@ public class User {
           joinColumns = @JoinColumn(name = "user_id"),
           inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
     
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Booking> bookings;
     
-    // Constructor para inicializar campos esenciales
-    public User(Long userId, String username, String email, String password) {
-        this.userId = userId;
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
     }
     
-    // Constructor sin parámetros (necesario para JPA)
-    public User() {}
+    public User() {
     
-    // Getters y setters
-    public Long getUserId() {
-        return userId;
     }
     
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
     
     public String getUsername() {
@@ -79,35 +76,32 @@ public class User {
         this.password = password;
     }
     
-    public List<Role> getRoles() {
+    
+    public Set<Role> getRoles() {
         return roles;
     }
     
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
     
-    public Profile getProfile() {
-        return profile;
+    public Set<Booking> getBookings() {
+        return bookings;
     }
     
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-        if (profile != null) {
-            profile.setUser(this); // Bidireccionalidad
-        }
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
     
-    // Método toString para debugging
-    //  No incluyo password ni profile por razones de privacidad y
-    //  para evitar cargar datos innecesarios.
-    @Override
-    public String toString() {
-        return "User{" +
-              "userId=" + userId +
-              ", username='" + username + '\'' +
-              ", email='" + email + '\'' +
-              ", roles=" + roles +
-              '}';
+    public void addBooking(Booking booking) {
+        bookings.add(booking);
+        booking.setUser(this);
     }
+    
+    public void removeBooking(Booking booking) {
+        bookings.remove(booking);
+        booking.setUser(null);
+    }
+    
+    
 }

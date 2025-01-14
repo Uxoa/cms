@@ -1,4 +1,4 @@
-package io.airboss.cms.airports;
+package io.airboss.cms.airports.exceptions;
 
 
 import io.airboss.cms.common.ResourceNotFoundException;

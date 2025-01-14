@@ -1,43 +1,52 @@
 package io.airboss.cms.users;
 
-import io.airboss.cms.security.jwt.LoginRequest;
-import jakarta.transaction.Transactional;
+import io.airboss.cms.roles.Role;
+import io.airboss.cms.roles.RoleRepository;
+import io.airboss.cms.profiles.Profile;
+import io.airboss.cms.profiles.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class UserService {
     
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     
     @Autowired
-    private final PasswordEncoder passwordEncoder;
+    private RoleRepository roleRepository;
     
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private ProfileRepository profileRepository;
     
     @Transactional
-    public void login(LoginRequest request) {
-        String username = request.getUsername();
-        Optional<User> existingUser = userRepository.findByUsername(username);
+    public User createUser(User user, Profile profile, List<String> roles) {
+        // Asignar roles
+        Set<Role> roleEntities = roles.stream()
+              .map(roleName -> roleRepository.findByName(roleName)
+                    .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleName)))
+              .collect(Collectors.toSet());
+        user.setRoles(roleEntities);
         
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            // Verificar la contraseña con el método matches
-            if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                System.out.println("Usuario autenticado: " + username);
-            } else {
-                System.out.println("Contraseña incorrecta");
-            }
-        } else {
-            System.out.println("Usuario no encontrado");
-        }
+        // Asociar perfil al usuario
+        profile.setUser(user);
+        profileRepository.save(profile);
+        
+        // Guardar usuario
+        return userRepository.save(user);
+    }
+    
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+              .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + id));
+    }
+    
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BookingRepository extends JpaRepository<io.airboss.cms.bookings.Booking, Long> {
-    List<io.airboss.cms.bookings.Booking> findByUserUserId(Long userId);
-    List<io.airboss.cms.bookings.Booking> findByFlightFlightId(Long flightId);
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+    List<Booking> findByUserId(Long userId);
 }

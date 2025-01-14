@@ -6,10 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
-    @Modifying
-    @Query("UPDATE Profile p SET p.profileImage = :profileImage WHERE p.id = :id")
-    void setProfileImage(@Param("profileImage") String profileImage, @Param("id") Long id);
-    
+
 }

@@ -1,3 +1,4 @@
+/*
 package io.airboss.cms.config;
 
 import io.airboss.cms.airports.Airport;
@@ -73,11 +74,7 @@ public class DataLoader {
     @Order(1)
     CommandLineRunner loadRoles() {
         return args -> loadFromCsv(ROLES_FILE, values ->
-              new Role(
-                    Long.parseLong(values[0]), // Role ID
-                    values[1] // Role Name
-              ), (CrudRepository<Role, Long>
-              ) roleRepository);
+              new Role(Long.parseLong(values[0]), values[1]), roleRepository);
     }
     
     @Bean
@@ -139,7 +136,7 @@ public class DataLoader {
                   .filter(Optional::isPresent)
                   .map(Optional::get)
                   .collect(Collectors.toList());
-            user.setRoles((List<Role>) roles.stream().collect(Collectors.toSet()));
+            user.setRoles(roles.stream().collect(Collectors.toList()));
             
             // Guardar usuario con perfil
             userRepository.save(user);
@@ -201,3 +198,4 @@ public class DataLoader {
         }
     }
 }
+*/

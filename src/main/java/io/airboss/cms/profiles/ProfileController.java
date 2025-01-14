@@ -1,76 +1,34 @@
 package io.airboss.cms.profiles;
 
-import io.airboss.cms.users.User;
-import io.airboss.cms.users.UserRepository;
+import io.airboss.cms.profiles.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
-
-@Controller
+@RestController
+@RequestMapping("/api/profiles")
 public class ProfileController {
-    
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProfileRepository profileRepository;
+    private ProfileService profileService;
     
-    @GetMapping("/profile")
-    public String userProfile(Authentication authentication, Model model) {
-        String email = authentication.getName();
-        User user = userRepository.findByUsername(email)
-              .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
-        model.addAttribute("user", user);
-        return "profile"; // Nombre de la vista HTML (por ejemplo, profile.html en templates)
+    @PostMapping
+    public ResponseEntity<Profile> createProfile(@RequestBody Profile profile) {
+        return ResponseEntity.ok(profileService.createProfile(profile));
     }
     
-    @PostMapping("/profile-image")
-    public String uploadProfileImage(@RequestParam("image") MultipartFile file, Authentication authentication, Model model) {
-        String email = authentication.getName();
-        User user = userRepository.findByUsername(email)
-              .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        // Guardar la imagen en /static/img
-        String fileName = saveImage(file);
-        profileRepository.setProfileImage(fileName, user.getProfile().getProfileId());
- 
-        userRepository.save(user);
-        
-        model.addAttribute("user", user);
-        model.addAttribute("message", "Imagen de perfil actualizada correctamente.");
-        return "profile"; // Redirige a la vista del perfil
+    @GetMapping("/{id}")
+    public ResponseEntity<Profile> getProfileById(@PathVariable Long id) {
+        return ResponseEntity.ok(profileService.getProfileById(id));
     }
     
-    private String saveImage(MultipartFile file) {
-        try {
-            // Directorio donde se guardarán las imágenes
-            String uploadDir = "src/main/resources/static/img/";
-            File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            
-            // Generar un nombre único para la imagen
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir + fileName);
-            
-            // Guardar la imagen en el disco
-            Files.write(filePath, file.getBytes());
-            
-            return fileName;
-        } catch (IOException e) {
-            throw new RuntimeException("Error al guardar la imagen", e);
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<Profile> updateProfile(@PathVariable Long id, @RequestBody Profile updatedProfile) {
+        return ResponseEntity.ok(profileService.updateProfile(id, updatedProfile));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProfile(@PathVariable Long id) {
+        profileService.deleteProfile(id);
+        return ResponseEntity.ok("Perfil eliminado correctamente");
     }
 }

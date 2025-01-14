@@ -1,5 +1,6 @@
 package io.airboss.cms.profiles;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.airboss.cms.users.User;
 import jakarta.persistence.*;
 
@@ -11,10 +12,6 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long profileId;
-    
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
     
     @Column(nullable = false)
     private String name;
@@ -34,10 +31,16 @@ public class Profile {
     @Column
     private LocalDateTime lastLogin;
     
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore // Evita bucles de serialización
+    private User user;
     
-    public Profile(Long profileId, User user, String name, String lastName, Long mobile, String profileImage, LocalDateTime registrationDate, LocalDateTime lastLogin) {
-        this.profileId = profileId;
-        this.user = user;
+    // Constructores
+    public Profile() {}
+    
+    public Profile(String name, String lastName, Long mobile, String profileImage,
+                   LocalDateTime registrationDate, LocalDateTime lastLogin) {
         this.name = name;
         this.lastName = lastName;
         this.mobile = mobile;
@@ -46,22 +49,13 @@ public class Profile {
         this.lastLogin = lastLogin;
     }
     
-    public Profile() {}
-    
+    // Getters y setters
     public Long getProfileId() {
         return profileId;
     }
     
     public void setProfileId(Long profileId) {
         this.profileId = profileId;
-    }
-    
-    public User getUser() {
-        return user;
-    }
-    
-    public void setUser(User user) {
-        this.user = user;
     }
     
     public String getName() {
@@ -111,4 +105,16 @@ public class Profile {
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
+    
+    public User getUser() {
+        return user;
+    }
+    
+    public void setUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Un perfil debe estar asociado a un usuario.");
+        }
+        this.user = user;
+    }
+    
 }

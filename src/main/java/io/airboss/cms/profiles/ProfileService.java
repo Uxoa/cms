@@ -1,16 +1,34 @@
 package io.airboss.cms.profiles;
 
-import jakarta.transaction.Transactional;
+import io.airboss.cms.profiles.Profile;
+import io.airboss.cms.profiles.ProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProfileService {
-    private final ProfileRepository profileRepository;
+    @Autowired
+    private ProfileRepository profileRepository;
     
-    public ProfileService(ProfileRepository profileRepository) {
-        this.profileRepository = profileRepository;
+    public Profile createProfile(Profile profile) {
+        return profileRepository.save(profile);
     }
     
-    @Transactional
-    public void updateProfileImage(Long id, String profileImage) {
-        profileRepository.setProfileImage(profileImage, id);
+    public Profile getProfileById(Long id) {
+        return profileRepository.findById(id)
+              .orElseThrow(() -> new RuntimeException("Perfil no encontrado: " + id));
+    }
+    
+    public Profile updateProfile(Long id, Profile updatedProfile) {
+        Profile profile = getProfileById(id);
+        profile.setName(updatedProfile.getName());
+        profile.setLastName(updatedProfile.getLastName());
+        profile.setMobile(updatedProfile.getMobile());
+        return profileRepository.save(profile);
+    }
+    
+    public void deleteProfile(Long id) {
+        Profile profile = getProfileById(id);
+        profileRepository.delete(profile);
     }
 }
