@@ -1,4 +1,4 @@
-package io.airboss.cms.security.auth;
+package io.airboss.cms.security.jwt;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

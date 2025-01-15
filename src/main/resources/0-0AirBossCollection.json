@@ -1,6 +1,6 @@
 {
     "info": {
-        "name": "0-0AirBossCollection.json",
+        "name": "AirBoss API Collection",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -17,20 +17,20 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"your-password\"\n}"
+                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"password\"\n}"
                 },
                 "url": {
-                    "raw": "http://localhost:8080/api/login",
+                    "raw": "http://localhost:8080/api/auth/login",
                     "protocol": "http",
                     "host": ["localhost"],
                     "port": "8080",
-                    "path": ["api", "login"]
+                    "path": ["api", "auth", "login"]
                 }
             },
             "response": []
         },
         {
-            "name": "Get All Airports",
+            "name": "Get All Users",
             "request": {
                 "method": "GET",
                 "header": [
@@ -41,17 +41,17 @@
                     }
                 ],
                 "url": {
-                    "raw": "http://localhost:8080/api/airports",
+                    "raw": "http://localhost:8080/api/users",
                     "protocol": "http",
                     "host": ["localhost"],
                     "port": "8080",
-                    "path": ["api", "airports"]
+                    "path": ["api", "users"]
                 }
             },
             "response": []
         },
         {
-            "name": "Create Flight",
+            "name": "Create User",
             "request": {
                 "method": "POST",
                 "header": [
@@ -68,43 +68,22 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"origin\": \"LAX\",\n  \"destination\": \"JFK\",\n  \"departureTime\": \"2025-01-14T10:00:00\",\n  \"totalSeats\": 200,\n  \"availableSeats\": 150,\n  \"isAvailable\": true,\n  \"airlineName\": \"American Airlines\"\n}"
+                    "raw": "{\n    \"username\": \"newuser\",\n    \"email\": \"newuser@example.com\",\n    \"password\": \"newpassword\"\n}"
                 },
                 "url": {
-                    "raw": "http://localhost:8080/api/flights",
+                    "raw": "http://localhost:8080/api/users",
                     "protocol": "http",
                     "host": ["localhost"],
                     "port": "8080",
-                    "path": ["api", "flights"]
+                    "path": ["api", "users"]
                 }
             },
             "response": []
         },
         {
-            "name": "Get All Flights",
+            "name": "Update User",
             "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer your-token",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "http://localhost:8080/api/flights",
-                    "protocol": "http",
-                    "host": ["localhost"],
-                    "port": "8080",
-                    "path": ["api", "flights"]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Create Booking",
-            "request": {
-                "method": "POST",
+                "method": "PUT",
                 "header": [
                     {
                         "key": "Content-Type",
@@ -119,22 +98,22 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"userId\": 2,\n  \"flightId\": 1,\n  \"numberOfSeats\": 2\n}"
+                    "raw": "{\n    \"username\": \"updateduser\",\n    \"email\": \"updateduser@example.com\",\n    \"password\": \"updatedpassword\"\n}"
                 },
                 "url": {
-                    "raw": "http://localhost:8080/api/bookings",
+                    "raw": "http://localhost:8080/api/users/2",
                     "protocol": "http",
                     "host": ["localhost"],
                     "port": "8080",
-                    "path": ["api", "bookings"]
+                    "path": ["api", "users", "2"]
                 }
             },
             "response": []
         },
         {
-            "name": "Get All Bookings",
+            "name": "Delete User",
             "request": {
-                "method": "GET",
+                "method": "DELETE",
                 "header": [
                     {
                         "key": "Authorization",
@@ -143,32 +122,11 @@
                     }
                 ],
                 "url": {
-                    "raw": "http://localhost:8080/api/bookings",
+                    "raw": "http://localhost:8080/api/users/2",
                     "protocol": "http",
                     "host": ["localhost"],
                     "port": "8080",
-                    "path": ["api", "bookings"]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Get Booking By User",
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer your-token",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "http://localhost:8080/api/bookings/user/2",
-                    "protocol": "http",
-                    "host": ["localhost"],
-                    "port": "8080",
-                    "path": ["api", "bookings", "user", "2"]
+                    "path": ["api", "users", "2"]
                 }
             },
             "response": []

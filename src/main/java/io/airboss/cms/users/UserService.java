@@ -49,4 +49,16 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    
+    public User updateUser(Long id, User updatedUser) {
+        User existingUser = getUserById(id);
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setPassword(updatedUser.getPassword());
+        return userRepository.save(existingUser);
+    }
+    
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+    
 }

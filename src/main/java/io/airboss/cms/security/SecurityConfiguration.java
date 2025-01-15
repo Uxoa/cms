@@ -3,11 +3,13 @@ package io.airboss.cms.security;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.authorization.OAuth2AuthorizationManagers.hasScope;
 
+import java.security.Key;
 import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import io.airboss.cms.security.jwt.JwtAuthenticationFilter;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +67,8 @@ public class SecurityConfiguration {
                     // Permitir acceso público a ciertas rutas
                     .requestMatchers(endpoint + "/auth/login",endpoint + "/auth/register").permitAll()
                     .requestMatchers(HttpMethod.GET, endpoint +"public/**").permitAll()
+                    .requestMatchers(endpoint +"/users/**").hasRole( "ADMIN")
+                    
                     // Rutas protegidas según roles
                     .requestMatchers(endpoint +"/admin/**").hasRole("ADMIN")
                     .requestMatchers(endpoint +"/user/**").hasAnyRole("USER", "ADMIN")
