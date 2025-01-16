@@ -26,6 +26,11 @@ public class UserService {
             profile = profileService.getProfileById(userRequestDTO.getProfile().getId());
         }
         
+        if (userRepository.findByUsername(userRequestDTO.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists: " + userRequestDTO.getUsername());
+        }
+        
+        
         User user = userMapper.toEntity(userRequestDTO);
         user.setProfile(profile);
         
