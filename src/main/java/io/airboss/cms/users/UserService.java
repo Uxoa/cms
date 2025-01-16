@@ -1,15 +1,11 @@
 package io.airboss.cms.users;
 
-import io.airboss.cms.roles.Role;
-import io.airboss.cms.roles.RoleRepository;
+import io.airboss.cms.profiles.ProfileService;
 import io.airboss.cms.profiles.Profile;
-import io.airboss.cms.profiles.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,46 +15,55 @@ public class UserService {
     private UserRepository userRepository;
     
     @Autowired
-    private RoleRepository roleRepository;
+    private UserMapper userMapper;
     
     @Autowired
-    private ProfileRepository profileRepository;
+    private ProfileService profileService;
     
-    @Transactional
-    public User createUser(User user, Profile profile, List<String> roles) {
-        // Asignar roles
-        Set<Role> roleEntities = roles.stream()
-              .map(roleName -> roleRepository.findByName(roleName)
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleName)))
-              .collect(Collectors.toSet());
-        user.setRoles(roleEntities);
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
+        Profile profile = null;
+        if (userRequestDTO.getProfile() != null && userRequestDTO.getProfile().getId() != null) {
+            profile = profileService.getProfileById(userRequestDTO.getProfile().getId());
+        }
         
-        // Asociar perfil al usuario
-        profile.setUser(user);
-        profileRepository.save(profile);
+        User user = userMapper.toEntity(userRequestDTO);
+        user.setProfile(profile);
         
-        // Guardar usuario
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return userMapper.toResponseDTO(savedUser);
     }
     
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-              .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + id));
-    }
-    
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-    
-    public User updateUser(Long id, User updatedUser) {
-        User existingUser = getUserById(id);
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setPassword(updatedUser.getPassword());
-        return userRepository.save(existingUser);
+    public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO) {
+        User user = userRepository.findById(id)
+              .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        userMapper.updateEntity(user, userRequestDTO);
+        
+        if (userRequestDTO.getProfile() != null && userRequestDTO.getProfile().getId() != null) {
+            Profile profile = profileService.getProfileById(userRequestDTO.getProfile().getId());
+            user.setProfile(profile);
+        }
+        
+        User updatedUser = userRepository.save(user);
+        return userMapper.toResponseDTO(updatedUser);
     }
     
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
         userRepository.deleteById(id);
     }
     
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+              .map(userMapper::toResponseDTO)
+              .collect(Collectors.toList());
+    }
+    
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+              .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toResponseDTO(user);
+    }
 }

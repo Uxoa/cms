@@ -1,9 +1,6 @@
 package io.airboss.cms.users;
 
-import io.airboss.cms.profiles.Profile;
-import io.airboss.cms.roles.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,23 +12,28 @@ public class UserController {
     @Autowired
     private UserService userService;
     
+    @GetMapping
+    public List<UserResponseDTO> getAllUsers() {
+        return userService.getAllUsers();
+    }
+    
     @PostMapping
-    public ResponseEntity<User> createUser(
-          @RequestBody User user,
-          @RequestBody Profile profile,
-          @RequestBody List<String> roles) {
-        
-        User createdUser = userService.createUser(user, profile, roles);
-        return ResponseEntity.ok(createdUser);
+    public UserResponseDTO createUser(@RequestBody UserRequestDTO userRequestDTO) {
+        return userService.createUser(userRequestDTO);
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public UserResponseDTO getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
     
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    @PutMapping("/{id}")
+    public UserResponseDTO updateUser(@PathVariable Long id, @RequestBody UserRequestDTO userRequestDTO) {
+        return userService.updateUser(id, userRequestDTO);
+    }
+    
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 }

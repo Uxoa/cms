@@ -1,6 +1,6 @@
 package io.airboss.cms.profiles;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.airboss.cms.users.User;
 import jakarta.persistence.*;
 
@@ -19,7 +19,7 @@ public class Profile {
     @Column(nullable = false)
     private String lastName;
     
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     
     @Column(nullable = false)
@@ -36,7 +36,7 @@ public class Profile {
     
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore // Evita bucles de serialización
+    @JsonBackReference
     private User user;
     
     // Constructores

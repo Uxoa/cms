@@ -1,5 +1,6 @@
 package io.airboss.cms.users;
 
+import io.airboss.cms.profiles.Profile;
 import io.airboss.cms.roles.Role;
 import io.airboss.cms.bookings.Booking;
 import jakarta.persistence.*;
@@ -20,6 +21,9 @@ public class User {
     @Column(nullable = false)
     private String password;
     
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Profile profile;
+    
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
           name = "user_roles",
@@ -30,6 +34,8 @@ public class User {
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Booking> bookings;
+    
+    
     
     public User(String username,  String password) {
         this.username = username;
@@ -61,8 +67,16 @@ public class User {
         return password;
     }
     
+    public Profile getProfile() {
+        return profile;
+    }
+    
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
     
     
@@ -92,4 +106,5 @@ public class User {
         booking.setUser(null);
     }
     
+  
 }
