@@ -1,6 +1,8 @@
 package io.airboss.cms.users;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.airboss.cms.profiles.Profile;
+import io.airboss.cms.profiles.ProfileResponseDTO;
 import io.airboss.cms.roles.Role;
 import io.airboss.cms.bookings.Booking;
 import jakarta.persistence.*;
@@ -13,7 +15,8 @@ public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
     
     @Column(nullable = false, unique = true)
     private String username;
@@ -21,7 +24,10 @@ public class User {
     @Column(nullable = false)
     private String password;
     
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id", referencedColumnName = "profile_id", nullable = false) //
+    // Relación con Profile
+    @JsonManagedReference // Evita ciclos en JSON
     private Profile profile;
     
     @ManyToMany(fetch = FetchType.EAGER)
@@ -35,23 +41,22 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Booking> bookings;
     
-    
-    
-    public User(String username,  String password) {
+    // Constructores
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
     
     public User() {
-    
     }
     
+    // Getters y Setters
     public Long getId() {
-        return id;
+        return userId;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long userId) {
+        this.userId = userId;
     }
     
     public String getUsername() {
@@ -62,23 +67,21 @@ public class User {
         this.username = username;
     }
     
-    
     public String getPassword() {
         return password;
-    }
-    
-    public Profile getProfile() {
-        return profile;
     }
     
     public void setPassword(String password) {
         this.password = password;
     }
     
+    public Profile getProfile() {
+        return profile;
+    }
+    
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
-    
     
     public Set<Role> getRoles() {
         return roles;
@@ -106,5 +109,20 @@ public class User {
         booking.setUser(null);
     }
     
-  
+    // Conversión a DTO
+    public ProfileResponseDTO toProfileResponseDTO() {
+        if (profile == null) {
+            return null; // Manejo de casos donde no haya perfil asociado
+        }
+        return new ProfileResponseDTO(
+              profile.getProfileId(),
+              profile.getName(),
+              profile.getLastName(),
+              profile.getEmail(),
+              profile.getMobile(),
+              profile.getProfileImage(),
+              profile.getRegistrationDate(),
+              profile.getLastLogin()
+        );
+    }
 }

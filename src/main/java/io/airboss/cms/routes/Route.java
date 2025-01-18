@@ -17,8 +17,8 @@ import java.io.Serializable;
 public class Route implements Serializable {
     
     @Id
-    @Column(name = "route_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "route_id", nullable = false)
     private Integer routeId;
     
     @Column(name = "aeropuerto_origen_id", nullable = false)

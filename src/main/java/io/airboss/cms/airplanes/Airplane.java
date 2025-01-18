@@ -1,4 +1,4 @@
-package io.airboss.cms.airports.airplanes;
+package io.airboss.cms.airplanes;
 
 
 import jakarta.persistence.*;
@@ -9,13 +9,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class Airplane {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "airplanes_id")
+    private Long airplanesId;
     
     public void setId(Long id) {
-        this.id = id;
+        this.airplanesId = id;
     }
     
     public Long getId() {
-        return id;
+        return airplanesId;
     }
 }

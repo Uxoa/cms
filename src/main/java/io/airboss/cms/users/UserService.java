@@ -1,14 +1,16 @@
 package io.airboss.cms.users;
 
-import io.airboss.cms.profiles.ProfileService;
-import io.airboss.cms.profiles.Profile;
+import io.airboss.cms.profiles.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
     
     @Autowired
@@ -20,35 +22,78 @@ public class UserService {
     @Autowired
     private ProfileService profileService;
     
+    @Autowired
+    private ProfileMapper profileMapper;
+    
+    @Autowired
+    private ProfileRepository profileRepository;
+    
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
-        Profile profile = null;
-        if (userRequestDTO.getProfile() != null && userRequestDTO.getProfile().getId() != null) {
-            profile = profileService.getProfileById(userRequestDTO.getProfile().getId());
-        }
         
         if (userRepository.findByUsername(userRequestDTO.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username already exists: " + userRequestDTO.getUsername());
         }
         
-        
         User user = userMapper.toEntity(userRequestDTO);
-        user.setProfile(profile);
+        User savedUser = userRepository.save(user); // Save user first
         
-        User savedUser = userRepository.save(user);
+        ProfileResponseDTO profileResponseDTO = null;
+        if (userRequestDTO.getProfileId() != null && userRequestDTO.getProfileId().longValue() > 0) {
+            profileResponseDTO = profileService.getProfileById(userRequestDTO.getProfileId());
+        }
+        
+        if (profileResponseDTO != null) {
+            ProfileRequestDTO profileRequestDTO = new ProfileRequestDTO();
+            profileRequestDTO.setId(profileResponseDTO.getId());
+            profileRequestDTO.setName(profileResponseDTO.getName());
+            profileRequestDTO.setLastName(profileResponseDTO.getLastName());
+            profileRequestDTO.setEmail(profileResponseDTO.getEmail());
+            profileRequestDTO.setMobile(profileResponseDTO.getMobile());
+            profileRequestDTO.setProfileImage(profileResponseDTO.getProfileImage());
+            profileRequestDTO.setRegistrationDate(profileResponseDTO.getRegistrationDate());
+            profileRequestDTO.setLastLogin(profileResponseDTO.getLastLogin());
+            profileRequestDTO.setUserId(savedUser.getId());
+            
+            Profile profile = profileMapper.toEntity(profileRequestDTO);
+            profile.setUser(savedUser); // Set saved user
+            savedUser.setProfile(profile);
+            userRepository.save(savedUser); // Save user again with profile
+        }
+        
         return userMapper.toResponseDTO(savedUser);
     }
     
     public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO) {
+        // Buscar el usuario existente
         User user = userRepository.findById(id)
               .orElseThrow(() -> new RuntimeException("User not found"));
         
+        // Actualizar las propiedades básicas del usuario
         userMapper.updateEntity(user, userRequestDTO);
         
-        if (userRequestDTO.getProfile() != null && userRequestDTO.getProfile().getId() != null) {
-            Profile profile = profileService.getProfileById(userRequestDTO.getProfile().getId());
-            user.setProfile(profile);
+        if (userRequestDTO.getProfileId() != null) {
+            // Recuperar el perfil existente
+            ProfileResponseDTO profile = profileService.getProfileById(userRequestDTO.getProfileId());
+            
+            if (profile == null) {
+                throw new RuntimeException("Profile not found for id: " + userRequestDTO.getProfileId());
+            }
+            
+            // Actualizar los campos del perfil solo si están presentes
+            if (userRequestDTO.getProfileName() != null) profile.setName(userRequestDTO.getProfileName());
+            if (userRequestDTO.getProfileLastName() != null) profile.setLastName(userRequestDTO.getProfileLastName());
+            if (userRequestDTO.getProfileEmail() != null) profile.setEmail(userRequestDTO.getProfileEmail());
+            if (userRequestDTO.getProfileMobile() != null) profile.setMobile(userRequestDTO.getProfileMobile());
+            if (userRequestDTO.getProfileImage() != null) profile.setProfileImage(userRequestDTO.getProfileImage());
+            
+            // Relacionar el perfil con el usuario
+            user.setProfile(profileMapper.toEntity(profile));
+            
+            // Guardar el perfil actualizado
+            profileRepository.save(profileMapper.toEntity(profile));
         }
         
+        // Guardar el usuario actualizado
         User updatedUser = userRepository.save(user);
         return userMapper.toResponseDTO(updatedUser);
     }

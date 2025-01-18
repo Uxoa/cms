@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "profile_id")
     private Long profileId;
     
     @Column(nullable = false)
@@ -34,9 +35,9 @@ public class Profile {
     @Column
     private LocalDateTime lastLogin;
     
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonBackReference
+    
+    @OneToOne(mappedBy = "profile", fetch = FetchType.LAZY) // Relación inversa
+    @JsonBackReference // Controla la serialización JSON inversa
     private User user;
     
     // Constructores

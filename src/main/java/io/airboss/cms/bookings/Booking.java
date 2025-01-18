@@ -12,6 +12,7 @@ public class Booking {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "booking_id")
     private Long bookingId;
     
     @ManyToOne

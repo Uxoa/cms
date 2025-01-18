@@ -1,6 +1,5 @@
 package io.airboss.cms.profiles;
 
-import io.airboss.cms.profiles.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,22 +7,23 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/profiles")
 public class ProfileController {
+    
     @Autowired
     private ProfileService profileService;
     
     @PostMapping
-    public ResponseEntity<Profile> createProfile(@RequestBody Profile profile) {
-        return ResponseEntity.ok(profileService.createProfile(profile));
+    public ResponseEntity<ProfileResponseDTO> createProfile(@RequestBody ProfileRequestDTO profileRequestDTO) {
+        return ResponseEntity.ok(profileService.createProfile(profileRequestDTO));
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Profile> getProfileById(@PathVariable Long id) {
+    public ResponseEntity<ProfileResponseDTO> getProfileById(@PathVariable Long id) {
         return ResponseEntity.ok(profileService.getProfileById(id));
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Profile> updateProfile(@PathVariable Long id, @RequestBody Profile updatedProfile) {
-        return ResponseEntity.ok(profileService.updateProfile(id, updatedProfile));
+    public ResponseEntity<ProfileResponseDTO> updateProfile(@PathVariable Long id, @RequestBody ProfileRequestDTO updatedProfileDTO) {
+        return ResponseEntity.ok(profileService.updateProfile(id, updatedProfileDTO));
     }
     
     @DeleteMapping("/{id}")
